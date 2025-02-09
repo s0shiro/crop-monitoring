@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\CoordinatorController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,6 +25,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    });
+
+    Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+        Route::resource('users', UserController::class)->except(['show']);
     });
 
     Route::middleware('role:technician')->group(function () {
