@@ -11,6 +11,10 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("You're logged in!") }}
 
+                    @role('admin')
+                        <p>Welcome, Admin!</p>
+                    @endrole
+
                     <button class="btn">Button</button>
                 </div>
             </div>
