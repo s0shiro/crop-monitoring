@@ -15,7 +15,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Define roles
+        // Define roles using firstOrCreate
         $admin = Role::firstOrCreate(['name' => 'admin']);
         $technician = Role::firstOrCreate(['name' => 'technician']);
         $coordinator = Role::firstOrCreate(['name' => 'coordinator']);

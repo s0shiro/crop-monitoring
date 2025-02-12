@@ -36,6 +36,16 @@
                     Crops Management
                 </a>
             </li>
+            <li>
+                <a href="{{ route('farmers.index') }}" class="{{ request()->routeIs('farmers.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a6 6 0 0 0 6 6v12H6V8a6 6 0 0 0 6-6z"/>
+                        <path d="M12 2c0 3.314 2.686 6 6 6"/>
+                        <path d="M12 2c0 3.314-2.686 6-6 6"/>
+                    </svg>
+                    Farmers Management
+                </a>
+            </li>
             @endrole
 
             @role('technician')
@@ -69,13 +79,23 @@
                     Crops Management
                 </a>
             </li>
+            <li>
+                <a href="{{ route('farmers.index') }}" class="{{ request()->routeIs('farmers.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a6 6 0 0 0 6 6v12H6V8a6 6 0 0 0 6-6z"/>
+                        <path d="M12 2c0 3.314 2.686 6 6 6"/>
+                        <path d="M12 2c0 3.314-2.686 6-6 6"/>
+                    </svg>
+                    My Farmers
+                </a>
+            </li>
             @endrole
 
             @role('coordinator')
             <li class="menu-title">
                 <span>Coordination</span>
             </li>
-            <li>
+            {{-- <li>
                 <a href="#tasks">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
@@ -91,7 +111,7 @@
                     </svg>
                     Schedule
                 </a>
-            </li>
+            </li> --}}
             <li>
                 <a href="{{ route('crops.index') }}" class="{{ request()->routeIs('crops.*') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -99,7 +119,7 @@
                         <path d="M12 2c0 3.314 2.686 6 6 6"/>
                         <path d="M12 2c0 3.314-2.686 6-6 6"/>
                     </svg>
-                    Crops Management
+                    Crops
                 </a>
             </li>
             @endrole

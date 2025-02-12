@@ -1,3 +1,6 @@
 <x-app-layout>
-<h1>Technician Dashboard</h1>
+    @if (Auth::user()->hasRole('technician'))
+        <p>Assigned Coordinator: {{ Auth::user()->coordinator->name ?? 'None' }}</p>
+        <p>Allowed Crop Category: {{ Auth::user()->coordinator->crop_category ?? 'Not Assigned' }}</p>
+    @endif
 </x-app-layout>

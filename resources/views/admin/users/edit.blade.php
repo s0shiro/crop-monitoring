@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-2xl mx-auto p-6" x-data="{ roles: @json($user->roles->pluck('name')), permissions: @json($user->permissions->pluck('name')) }">
+    <div class="max-w-2xl mx-auto p-6" x-data="{ roles: @json($user->roles->pluck('name')) }">
         <h2 class="text-2xl font-light mb-6 text-gray-700">Edit User</h2>
 
         <form action="{{ route('users.update', $user) }}" method="POST" class="space-y-6">
@@ -25,19 +25,41 @@
                 <label for="roles" class="label">
                     <span class="label-text">Roles</span>
                 </label>
-                <div class="dropdown">
-                    <label tabindex="0" class="btn m-1">Select Role</label>
-                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52" style="z-index: 50;">
-                        @foreach ($roles as $role)
-                            <li>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="roles[]" value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'checked' : '' }} class="radio">
-                                    <span class="ml-2">{{ $role->name }}</span>
-                                </label>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
+                <select name="roles[]" id="role" class="border p-2 w-full" required>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                            {{ ucfirst($role->name) }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Crop Category for Coordinators -->
+            <div id="crop_category_field" class="{{ $user->hasRole('coordinator') ? '' : 'hidden' }}">
+                <label for="crop_category" class="label">
+                    <span class="label-text">Crop Category (For Coordinators)</span>
+                </label>
+                <select name="crop_category" class="border p-2 w-full">
+                    <option value="">Select Crop Category</option>
+                    <option value="Rice" {{ $user->crop_category == 'Rice' ? 'selected' : '' }}>Rice</option>
+                    <option value="Corn" {{ $user->crop_category == 'Corn' ? 'selected' : '' }}>Corn</option>
+                    <option value="High Value Crops" {{ $user->crop_category == 'High Value Crops' ? 'selected' : '' }}>High Value Crops</option>
+                </select>
+            </div>
+
+            <!-- Assign Coordinator for Technicians -->
+            <div id="coordinator_field" class="{{ $user->hasRole('technician') ? '' : 'hidden' }}">
+                <label for="coordinator_id" class="label">
+                    <span class="label-text">Assign Coordinator (For Technicians)</span>
+                </label>
+                <select name="coordinator_id" class="border p-2 w-full">
+                    <option value="">Select Coordinator</option>
+                    @foreach($coordinators as $coordinator)
+                        <option value="{{ $coordinator->id }}" {{ $user->coordinator_id == $coordinator->id ? 'selected' : '' }}>
+                            {{ $coordinator->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-control">
@@ -65,6 +87,23 @@
                 </button>
             </div>
         </form>
-
     </div>
+
+    <script>
+        document.getElementById('role').addEventListener('change', function () {
+            let cropCategoryField = document.getElementById('crop_category_field');
+            let coordinatorField = document.getElementById('coordinator_field');
+
+            if (this.value === 'coordinator') {
+                cropCategoryField.classList.remove('hidden');
+                coordinatorField.classList.add('hidden');
+            } else if (this.value === 'technician') {
+                cropCategoryField.classList.add('hidden');
+                coordinatorField.classList.remove('hidden');
+            } else {
+                cropCategoryField.classList.add('hidden');
+                coordinatorField.classList.add('hidden');
+            }
+        });
+    </script>
 </x-app-layout>
