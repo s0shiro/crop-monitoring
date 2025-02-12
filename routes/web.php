@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CropController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,6 +38,24 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('role:coordinator')->group(function () {
         Route::get('/coordinator', [CoordinatorController::class, 'index'])->name('coordinator.dashboard');
+    });
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/crops', [CropController::class, 'index'])->name('crops.index');
+
+    Route::middleware(['can:create-crops'])->group(function () {
+        Route::get('/crops/create', [CropController::class, 'create'])->name('crops.create');
+        Route::post('/crops', [CropController::class, 'store'])->name('crops.store');
+    });
+
+    Route::middleware(['can:update-crops'])->group(function () {
+        Route::get('/crops/{crop}/edit', [CropController::class, 'edit'])->name('crops.edit');
+        Route::put('/crops/{crop}', [CropController::class, 'update'])->name('crops.update');
+    });
+
+    Route::middleware(['can:delete-crops'])->group(function () {
+        Route::delete('/crops/{crop}', [CropController::class, 'destroy'])->name('crops.destroy');
     });
 });
 

@@ -26,6 +26,16 @@
                     Users Management
                 </a>
             </li>
+            <li>
+                <a href="{{ route('crops.index') }}" class="{{ request()->routeIs('crops.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a6 6 0 0 0 6 6v12H6V8a6 6 0 0 0 6-6z"/>
+                        <path d="M12 2c0 3.314 2.686 6 6 6"/>
+                        <path d="M12 2c0 3.314-2.686 6-6 6"/>
+                    </svg>
+                    Crops Management
+                </a>
+            </li>
             @endrole
 
             @role('technician')

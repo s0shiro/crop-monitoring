@@ -9,10 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('crops', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('category'); // Corn, Rice, High-Value Crops, etc.
+            $table->string('variety')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -20,7 +24,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('crops');
     }
