@@ -50,6 +50,21 @@
                                class="input input-bordered w-full">
                     </div>
 
+                    <!-- Association -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Association</span>
+                        </label>
+                        <select name="association_id" class="select select-bordered w-full">
+                            <option value="">No Association</option>
+                            @foreach($associations as $association)
+                                <option value="{{ $association->id }}" {{ old('association_id', $farmer->association_id) == $association->id ? 'selected' : '' }}>
+                                    {{ $association->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- Location -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="form-control">

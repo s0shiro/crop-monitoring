@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\VarietyController;
 use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\AssociationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,6 +68,32 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:delete-crops'])->group(function () {
         Route::delete('/crops/{crop}', [CropController::class, 'destroy'])->name('crops.destroy');
     });
+});
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/associations', [AssociationController::class, 'index'])
+        ->middleware('can:view associations')
+        ->name('associations.index');
+
+    Route::get('/associations/create', [AssociationController::class, 'create'])
+        ->middleware('can:create associations')
+        ->name('associations.create');
+
+    Route::post('/associations', [AssociationController::class, 'store'])
+        ->middleware('can:create associations')
+        ->name('associations.store');
+
+    Route::get('/associations/{association}/edit', [AssociationController::class, 'edit'])
+        ->middleware('can:update associations')
+        ->name('associations.edit');
+
+    Route::put('/associations/{association}', [AssociationController::class, 'update'])
+        ->middleware('can:update associations')
+        ->name('associations.update');
+
+    Route::delete('/associations/{association}', [AssociationController::class, 'destroy'])
+        ->middleware('can:delete associations')
+        ->name('associations.destroy');
 });
 
 require __DIR__.'/auth.php';

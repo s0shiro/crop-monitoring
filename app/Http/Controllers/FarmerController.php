@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Farmer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Association;
 
 class FarmerController extends Controller
 {
@@ -18,7 +19,7 @@ class FarmerController extends Controller
             ? Farmer::query()
             : Farmer::where('technician_id', Auth::id());
 
-        $farmers = $query->latest()->paginate(10);
+        $farmers = $query->with('association')->latest()->paginate(10);
 
         return view('farmers.index', compact('farmers'));
     }
@@ -28,7 +29,8 @@ class FarmerController extends Controller
      */
     public function create()
     {
-        return view('farmers.create');
+        $associations = Association::all();
+        return view('farmers.create', compact('associations'));
     }
 
     /**
@@ -43,6 +45,7 @@ class FarmerController extends Controller
             'landsize' => 'nullable|numeric|min:0',
             'barangay' => 'nullable|string|max:255',
             'municipality' => 'nullable|string|max:255',
+            'association_id' => 'nullable|exists:associations,id',
         ]);
 
         Farmer::create([
@@ -52,6 +55,7 @@ class FarmerController extends Controller
             'landsize' => $request->landsize,
             'barangay' => $request->barangay,
             'municipality' => $request->municipality,
+            'association_id' => $request->association_id,
             'technician_id' => Auth::id(),
         ]);
 
@@ -75,7 +79,8 @@ class FarmerController extends Controller
             abort(403);
         }
 
-        return view('farmers.edit', compact('farmer'));
+        $associations = Association::all();
+        return view('farmers.edit', compact('farmer', 'associations'));
     }
 
     /**
@@ -94,6 +99,7 @@ class FarmerController extends Controller
             'landsize' => 'nullable|numeric|min:0',
             'barangay' => 'nullable|string|max:255',
             'municipality' => 'nullable|string|max:255',
+            'association_id' => 'nullable|exists:associations,id',
         ]);
 
         $farmer->update($request->all());

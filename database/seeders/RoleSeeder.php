@@ -31,6 +31,10 @@ class RoleSeeder extends Seeder
             'update farmers',
             'delete farmers',
             'view farmers',
+            'create associations',
+            'update associations',
+            'delete associations',
+            'view associations',
         ];
 
         foreach ($permissions as $permission) {
@@ -43,7 +47,7 @@ class RoleSeeder extends Seeder
         // Assign specific permissions to technician
         $technician->syncPermissions([
             'create crops', 'update crops', 'view reports',
-            'create farmers', 'update farmers', 'view farmers'
+            'create farmers', 'update farmers', 'view farmers', 'view associations'
         ]);
 
         // Assign specific permissions to coordinator
