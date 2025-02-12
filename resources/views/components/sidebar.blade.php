@@ -42,7 +42,7 @@
             <li class="menu-title">
                 <span>Crop Management</span>
             </li>
-            <li>
+            {{-- <li>
                 <a href="#crops">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -57,6 +57,16 @@
                         <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" />
                     </svg>
                     Reports
+                </a>
+            </li> --}}
+            <li>
+                <a href="{{ route('crops.index') }}" class="{{ request()->routeIs('crops.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a6 6 0 0 0 6 6v12H6V8a6 6 0 0 0 6-6z"/>
+                        <path d="M12 2c0 3.314 2.686 6 6 6"/>
+                        <path d="M12 2c0 3.314-2.686 6-6 6"/>
+                    </svg>
+                    Crops Management
                 </a>
             </li>
             @endrole
@@ -80,6 +90,16 @@
                         <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" />
                     </svg>
                     Schedule
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('crops.index') }}" class="{{ request()->routeIs('crops.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a6 6 0 0 0 6 6v12H6V8a6 6 0 0 0 6-6z"/>
+                        <path d="M12 2c0 3.314 2.686 6 6 6"/>
+                        <path d="M12 2c0 3.314-2.686 6-6 6"/>
+                    </svg>
+                    Crops Management
                 </a>
             </li>
             @endrole

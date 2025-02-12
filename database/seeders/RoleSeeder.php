@@ -16,9 +16,9 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Define roles
-        $admin = Role::create(['name' => 'admin']);
-        $technician = Role::create(['name' => 'technician']);
-        $coordinator = Role::create(['name' => 'coordinator']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $technician = Role::firstOrCreate(['name' => 'technician']);
+        $coordinator = Role::firstOrCreate(['name' => 'coordinator']);
 
         // Define permissions
         $permissions = [
@@ -27,19 +27,26 @@ class RoleSeeder extends Seeder
             'update crops',
             'delete crops',
             'view reports',
+            'create farmers',
+            'update farmers',
+            'delete farmers',
+            'view farmers',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Assign all permissions to admin
-        $admin->givePermissionTo(Permission::all());
+        $admin->syncPermissions(Permission::all());
 
         // Assign specific permissions to technician
-        $technician->givePermissionTo(['create crops', 'update crops', 'view reports']);
+        $technician->syncPermissions([
+            'create crops', 'update crops', 'view reports',
+            'create farmers', 'update farmers', 'view farmers'
+        ]);
 
         // Assign specific permissions to coordinator
-        $coordinator->givePermissionTo(['view reports']);
+        $coordinator->syncPermissions(['view reports', 'view farmers']);
     }
 }
