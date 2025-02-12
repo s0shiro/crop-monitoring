@@ -65,6 +65,23 @@
                         </select>
                     </div>
 
+                    <!-- Allow Admin to change Technician -->
+                    @can('manage users')
+                    <div class="form-control">
+                        <label for="technician_id" class="label">
+                            <span class="label-text">Assigned Technician</span>
+                        </label>
+                        <select name="technician_id" class="border p-2 w-full">
+                            <option value="">Select Technician</option>
+                            @foreach ($technicians as $technician)
+                                <option value="{{ $technician->id }}" {{ $farmer->technician_id == $technician->id ? 'selected' : '' }}>
+                                    {{ $technician->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endcan
+
                     <!-- Location -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="form-control">

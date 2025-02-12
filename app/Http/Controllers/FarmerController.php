@@ -6,6 +6,7 @@ use App\Models\Farmer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Association;
+use App\Models\User;
 
 class FarmerController extends Controller
 {
@@ -30,8 +31,18 @@ class FarmerController extends Controller
     public function create()
     {
         $associations = Association::all();
-        return view('farmers.create', compact('associations'));
+
+        // If the logged-in user is an Admin, fetch all Technicians
+        $technicians = [];
+        if (Auth::user()->hasRole('admin')) {
+            $technicians = User::whereHas('roles', function ($query) {
+                $query->where('name', 'technician');
+            })->get();
+        }
+
+        return view('farmers.create', compact('associations', 'technicians'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -43,10 +54,14 @@ class FarmerController extends Controller
             'gender' => 'required|in:male,female',
             'rsbsa' => 'nullable|string|max:255',
             'landsize' => 'nullable|numeric|min:0',
-            'barangay' => 'nullable|string|max:255',
-            'municipality' => 'nullable|string|max:255',
+            'barangay' => 'required|string|max:255',
+            'municipality' => 'required|string|max:255',
             'association_id' => 'nullable|exists:associations,id',
+            'technician_id' => 'nullable|exists:users,id', // Allow Admin to assign Technician
         ]);
+
+        // Determine Technician assignment
+        $technicianId = Auth::user()->hasRole('admin') ? $request->technician_id : Auth::id();
 
         Farmer::create([
             'name' => $request->name,
@@ -56,7 +71,7 @@ class FarmerController extends Controller
             'barangay' => $request->barangay,
             'municipality' => $request->municipality,
             'association_id' => $request->association_id,
-            'technician_id' => Auth::id(),
+            'technician_id' => $technicianId, // Assign selected or logged-in Technician
         ]);
 
         return redirect()->route('farmers.index')->with('success', 'Farmer added successfully.');
@@ -75,19 +90,30 @@ class FarmerController extends Controller
      */
     public function edit(Farmer $farmer)
     {
+        // Restrict technicians from editing farmers that are not assigned to them
         if (Auth::user()->hasRole('technician') && $farmer->technician_id !== Auth::id()) {
             abort(403);
         }
 
         $associations = Association::all();
-        return view('farmers.edit', compact('farmer', 'associations'));
+
+        // Load technicians only if the user is an Admin
+        $technicians = Auth::user()->hasRole('admin')
+            ? User::whereHas('roles', function ($query) {
+                $query->where('name', 'technician');
+            })->get()
+            : null;
+
+        return view('farmers.edit', compact('farmer', 'associations', 'technicians'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Farmer $farmer)
     {
+        // Restrict technicians from updating farmers not assigned to them
         if (Auth::user()->hasRole('technician') && $farmer->technician_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -100,12 +126,20 @@ class FarmerController extends Controller
             'barangay' => 'nullable|string|max:255',
             'municipality' => 'nullable|string|max:255',
             'association_id' => 'nullable|exists:associations,id',
+            'technician_id' => 'nullable|exists:users,id|required_if:role,admin', // Allow Admins to change Technician
         ]);
 
-        $farmer->update($request->all());
+        // Allow only Admins to update the technician_id
+        if (Auth::user()->hasRole('admin')) {
+            $farmer->update($request->all());
+        } else {
+            // Technicians cannot change technician_id, only update their assigned farmers
+            $farmer->update($request->except('technician_id'));
+        }
 
         return redirect()->route('farmers.index')->with('success', 'Farmer updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.

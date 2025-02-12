@@ -30,6 +30,7 @@
                                 <th class="bg-base-100 text-base-content/70">Association</th>
                                 <th class="bg-base-100 text-base-content/70">Barangay</th>
                                 <th class="bg-base-100 text-base-content/70">Municipality</th>
+                                <th>Assigned Technician</th>
                                 <th class="bg-base-100 text-base-content/70 text-center">Actions</th>
                             </tr>
                         </thead>
@@ -43,6 +44,7 @@
                                     <td>{{ $farmer->association->name ?? 'N/A' }}</td>
                                     <td>{{ $farmer->barangay ?? 'N/A' }}</td>
                                     <td>{{ $farmer->municipality ?? 'N/A' }}</td>
+                                    <td>{{ $farmer->technician->name ?? 'Not Assigned' }}</td>
                                     <td>
                                         <div class="flex justify-center gap-2">
                                             @can('update farmers')

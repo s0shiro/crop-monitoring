@@ -48,6 +48,21 @@
                         <input type="number" step="0.01" name="landsize" class="input input-bordered w-full">
                     </div>
 
+                    @can('manage users')
+                        <div class="form-control">
+                            <label for="technician_id" class="label">
+                                <span class="label-text">Assigned Technician</span>
+                            </label>
+                            <select name="technician_id" class="border p-2 w-full">
+                                <option value="">Select Technician</option>
+                                @foreach ($technicians as $technician)
+                                    <option value="{{ $technician->id }}">{{ $technician->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endcan
+
+
                     <!-- Association -->
                     <div class="form-control">
                         <label class="label">
