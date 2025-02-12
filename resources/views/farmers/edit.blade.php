@@ -1,32 +1,81 @@
 <x-app-layout>
-    <div class="container mx-auto p-6">
-        <h2 class="text-lg font-semibold">Edit Farmer</h2>
+    <div class="max-w-2xl mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-base-content">Edit Farmer</h2>
+            <p class="text-base-content/70 mt-1">Update farmer's information</p>
+        </div>
 
-        <form action="{{ route('farmers.update', $farmer) }}" method="POST">
-            @csrf @method('PUT')
+        <!-- Form Card -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <form action="{{ route('farmers.update', $farmer) }}" method="POST" class="space-y-4">
+                    @csrf @method('PUT')
 
-            <label>Name:</label>
-            <input type="text" name="name" class="border p-2 w-full" value="{{ $farmer->name }}" required>
+                    <!-- Name -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Name</span>
+                        </label>
+                        <input type="text" name="name" value="{{ $farmer->name }}"
+                               class="input input-bordered w-full" required>
+                    </div>
 
-            <label>Gender:</label>
-            <select name="gender" class="border p-2 w-full">
-                <option value="male" {{ $farmer->gender == 'male' ? 'selected' : '' }}>Male</option>
-                <option value="female" {{ $farmer->gender == 'female' ? 'selected' : '' }}>Female</option>
-            </select>
+                    <!-- Gender -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Gender</span>
+                        </label>
+                        <select name="gender" class="select select-bordered w-full">
+                            <option value="male" {{ $farmer->gender == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ $farmer->gender == 'female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                    </div>
 
-            <label>RSBSA Number:</label>
-            <input type="text" name="rsbsa" class="border p-2 w-full" value="{{ $farmer->rsbsa }}">
+                    <!-- RSBSA -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">RSBSA Number</span>
+                        </label>
+                        <input type="text" name="rsbsa" value="{{ $farmer->rsbsa }}"
+                               class="input input-bordered w-full">
+                    </div>
 
-            <label>Land Size (Hectares):</label>
-            <input type="number" step="0.01" name="landsize" class="border p-2 w-full" value="{{ $farmer->landsize }}">
+                    <!-- Land Size -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Land Size (Hectares)</span>
+                        </label>
+                        <input type="number" step="0.01" name="landsize" value="{{ $farmer->landsize }}"
+                               class="input input-bordered w-full">
+                    </div>
 
-            <label>Barangay:</label>
-            <input type="text" name="barangay" class="border p-2 w-full" value="{{ $farmer->barangay }}">
+                    <!-- Location -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">Barangay</span>
+                            </label>
+                            <input type="text" name="barangay" value="{{ $farmer->barangay }}"
+                                   class="input input-bordered w-full">
+                        </div>
 
-            <label>Municipality:</label>
-            <input type="text" name="municipality" class="border p-2 w-full" value="{{ $farmer->municipality }}">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">Municipality</span>
+                            </label>
+                            <input type="text" name="municipality" value="{{ $farmer->municipality }}"
+                                   class="input input-bordered w-full">
+                        </div>
+                    </div>
 
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-2">Update Farmer</button>
-        </form>
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end gap-2 mt-6">
+                        <a href="{{ route('farmers.index') }}" class="btn btn-ghost">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Farmer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </x-app-layout>
