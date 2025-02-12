@@ -8,6 +8,7 @@ use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CropController;
+use App\Http\Controllers\VarietyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/varieties', [VarietyController::class, 'getByCategory']);
+Route::get('/crops/by-category', [CropController::class, 'getByCategory']);
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {

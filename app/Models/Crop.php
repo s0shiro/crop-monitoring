@@ -10,4 +10,9 @@ class Crop extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'category', 'variety', 'description'];
+
+    public function varieties()
+    {
+        return $this->hasMany(Variety::class);
+    }
 }
