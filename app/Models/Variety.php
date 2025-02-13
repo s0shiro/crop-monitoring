@@ -9,7 +9,7 @@ class Variety extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'crop_id'];
+    protected $fillable = ['name', 'crop_id', 'maturity_days'];
 
     public function crop()
     {

@@ -39,7 +39,10 @@
                 <div id="varieties-list" class="space-y-2">
                     <template x-for="(variety, index) in varieties" :key="index">
                         <div class="flex gap-2">
-                            <input type="text" name="varieties[]" x-model="varieties[index]" class="input input-bordered w-full" placeholder="Enter variety">
+                            <div class="flex-1">
+                                <input type="text" name="varieties[]" x-model="varieties[index]" class="input input-bordered w-full" placeholder="Enter variety">
+                                <input type="number" :name="'maturity_days[' + index + ']'" class="input input-bordered w-full mt-2" placeholder="Maturity Days" required>
+                            </div>
                             <button type="button" @click="varieties = varieties.filter((_, i) => i !== index)" class="btn btn-square btn-error btn-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />

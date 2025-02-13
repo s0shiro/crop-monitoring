@@ -42,6 +42,8 @@ class CropController extends Controller
             'category_id' => 'required|exists:categories,id', // Changed validation rule
             'varieties' => 'nullable|array',
             'varieties.*' => 'nullable|string|max:255',
+            'maturity_days' => 'required|array',
+            'maturity_days.*' => 'required|integer|min:1',
         ]);
 
         // Create new crop
@@ -52,12 +54,12 @@ class CropController extends Controller
 
         // Store multiple varieties linked to the crop
         if ($request->varieties) {
-            foreach ($request->varieties as $varietyName) {
+            foreach ($request->varieties as $index => $varietyName) {
                 if ($varietyName) {
                     Variety::create([
                         'name' => $varietyName,
                         'crop_id' => $crop->id,
-                        // Removed category field since it's now linked through the crop
+                        'maturity_days' => $request->maturity_days[$index] ?? null,
                     ]);
                 }
             }
@@ -97,6 +99,8 @@ class CropController extends Controller
             'category_id' => 'required|exists:categories,id',
             'varieties' => 'nullable|array',
             'varieties.*' => 'nullable|string|max:255',
+            'maturity_days' => 'required|array',
+            'maturity_days.*' => 'required|integer|min:1',
         ]);
 
         // Check if a crop with the new name already exists in the same category
@@ -118,11 +122,12 @@ class CropController extends Controller
         // Sync varieties
         $crop->varieties()->delete();
         if ($request->varieties) {
-            foreach ($request->varieties as $varietyName) {
+            foreach ($request->varieties as $index => $varietyName) {
                 if ($varietyName) {
                     Variety::create([
                         'name' => $varietyName,
                         'crop_id' => $crop->id,
+                        'maturity_days' => $request->maturity_days[$index] ?? null,
                     ]);
                 }
             }
