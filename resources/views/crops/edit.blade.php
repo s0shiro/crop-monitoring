@@ -17,13 +17,26 @@
 
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text">Category</span>
+                    <span class="label-text">Category <span class="text-error">*</span></span>
                 </label>
-                <select name="category" id="category" class="select select-bordered w-full" required>
-                    <option value="Rice" {{ $crop->category == 'Rice' ? 'selected' : '' }}>Rice</option>
-                    <option value="Corn" {{ $crop->category == 'Corn' ? 'selected' : '' }}>Corn</option>
-                    <option value="High Value Crops" {{ $crop->category == 'High Value Crops' ? 'selected' : '' }}>High Value Crops</option>
+                <select
+                    name="category_id"
+                    id="category"
+                    class="select select-bordered w-full @error('category_id') select-error @enderror"
+                    required
+                >
+                    <option value="">Select Category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id', $crop->category_id) == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
                 </select>
+                @error('category_id')
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </label>
+                @enderror
             </div>
 
             <div class="form-control">

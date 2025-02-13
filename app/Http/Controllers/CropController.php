@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Crop;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Variety;
+use App\Models\Category;
 
 class CropController extends Controller
 {
@@ -14,7 +15,7 @@ class CropController extends Controller
      */
     public function index()
     {
-        $crops = Crop::all();
+        $crops = Crop::with(['category', 'varieties'])->get();
         return view('crops.index', compact('crops'));
     }
 
@@ -25,7 +26,8 @@ class CropController extends Controller
     {
         if (!Gate::allows('create-crops')) abort(403);
 
-        return view('crops.create');
+        $categories = Category::all();
+        return view('crops.create', compact('categories'));
     }
 
     /**
@@ -36,8 +38,8 @@ class CropController extends Controller
         if (!Gate::allows('create-crops')) abort(403);
 
         $request->validate([
-            'name' => 'required|string|max:255|unique:crops,name,NULL,id,category,' . $request->category,
-            'category' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:crops,name,NULL,id,category_id,' . $request->category_id, // Changed from category to category_id
+            'category_id' => 'required|exists:categories,id', // Changed validation rule
             'varieties' => 'nullable|array',
             'varieties.*' => 'nullable|string|max:255',
         ]);
@@ -45,9 +47,8 @@ class CropController extends Controller
         // Create new crop
         $crop = Crop::create([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id, // Changed from category to category_id
         ]);
-
 
         // Store multiple varieties linked to the crop
         if ($request->varieties) {
@@ -55,8 +56,8 @@ class CropController extends Controller
                 if ($varietyName) {
                     Variety::create([
                         'name' => $varietyName,
-                        'category' => $request->category,
                         'crop_id' => $crop->id,
+                        // Removed category field since it's now linked through the crop
                     ]);
                 }
             }
@@ -80,7 +81,8 @@ class CropController extends Controller
     {
         if (!Gate::allows('update-crops')) abort(403);
 
-        return view('crops.edit', compact('crop'));
+        $categories = Category::all();
+        return view('crops.edit', compact('crop', 'categories'));
     }
 
     /**
@@ -92,15 +94,15 @@ class CropController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'varieties' => 'nullable|array',
             'varieties.*' => 'nullable|string|max:255',
         ]);
 
         // Check if a crop with the new name already exists in the same category
         $existingCrop = Crop::where('name', $request->name)
-                            ->where('category', $request->category)
-                            ->where('id', '!=', $crop->id) // Exclude current crop
+                            ->where('category_id', $request->category_id) // Changed from category to category_id
+                            ->where('id', '!=', $crop->id)
                             ->first();
 
         if ($existingCrop) {
@@ -110,17 +112,16 @@ class CropController extends Controller
         // Update crop details
         $crop->update([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
         ]);
 
         // Sync varieties
-        $crop->varieties()->delete(); // Remove old varieties
+        $crop->varieties()->delete();
         if ($request->varieties) {
             foreach ($request->varieties as $varietyName) {
                 if ($varietyName) {
                     Variety::create([
                         'name' => $varietyName,
-                        'category' => $request->category,
                         'crop_id' => $crop->id,
                     ]);
                 }
@@ -144,9 +145,9 @@ class CropController extends Controller
 
     public function getByCategory(Request $request)
     {
-        $request->validate(['category' => 'required|string']);
+        $request->validate(['category_id' => 'required|exists:categories,id']);
 
-        $crops = Crop::where('category', $request->category)->get(['id', 'name']);
+        $crops = Crop::where('category_id', $request->category_id)->get(['id', 'name']);
 
         return response()->json($crops);
     }

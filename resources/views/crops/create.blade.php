@@ -16,14 +16,12 @@
             @endif
 
             <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Category</span>
-                </label>
-                <select name="category" id="category" class="select select-bordered w-full" required>
+                <label>Category:</label>
+                <select name="category_id" class="border p-2 w-full" required>
                     <option value="">Select Category</option>
-                    <option value="Rice">Rice</option>
-                    <option value="Corn">Corn</option>
-                    <option value="High Value Crops">High Value Crops</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
                 </select>
             </div>
 

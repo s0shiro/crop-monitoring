@@ -106,5 +106,11 @@ class DatabaseSeeder extends Seeder
             'create crops', 'update crops', 'view reports',
             'create farmers', 'update farmers', 'view farmers'
         ]);
+
+        $categories = ['Rice', 'Corn', 'High Value Crops'];
+
+        foreach ($categories as $category) {
+            Category::firstOrCreate(['name' => $category]);
+        }
     }
 }
