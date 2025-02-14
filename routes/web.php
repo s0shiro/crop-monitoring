@@ -11,6 +11,7 @@ use App\Http\Controllers\CropController;
 use App\Http\Controllers\VarietyController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\AssociationController;
+use App\Http\Controllers\CropPlantingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -94,6 +95,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/associations/{association}', [AssociationController::class, 'destroy'])
         ->middleware('can:delete associations')
         ->name('associations.destroy');
+
+    Route::middleware('permission:view crop planting')->group(function() {
+        Route::get('/crop_plantings', [CropPlantingController::class, 'index'])->name('crop_plantings.index');
+
+        Route::middleware('permission:manage crop planting')->group(function() {
+            Route::get('/crop_plantings/create', [CropPlantingController::class, 'create'])->name('crop_plantings.create');
+            Route::post('/crop_plantings', [CropPlantingController::class, 'store'])->name('crop_plantings.store');
+            Route::get('/crop_plantings/{cropPlanting}/edit', [CropPlantingController::class, 'edit'])->name('crop_plantings.edit');
+            Route::put('/crop_plantings/{cropPlanting}', [CropPlantingController::class, 'update'])->name('crop_plantings.update');
+            Route::delete('/crop_plantings/{cropPlanting}', [CropPlantingController::class, 'destroy'])->name('crop_plantings.destroy');
+        });
+    });
 });
 
 require __DIR__.'/auth.php';

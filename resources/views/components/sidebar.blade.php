@@ -15,6 +15,7 @@
             <x-sidebar-item route="crops.index" icon="crop" title="Crops Management" />
             <x-sidebar-item route="farmers.index" icon="farmer" title="Farmers Management" />
             <x-sidebar-item route="associations.index" icon="association" title="Associations" />
+            <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
             @endrole
 
             @role('technician')
@@ -24,6 +25,7 @@
 
             <x-sidebar-item route="crops.index" icon="crop" title="Crops Management" />
             <x-sidebar-item route="farmers.index" icon="farmer" title="My Farmers" />
+            <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
             @endrole
 
             @role('coordinator')
@@ -32,6 +34,7 @@
             </li>
 
             <x-sidebar-item route="crops.index" icon="crop" title="Crops" />
+            <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
             @endrole
         </ul>
     </aside>
