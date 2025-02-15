@@ -1,139 +1,177 @@
 <x-app-layout>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <div class="max-w-7xl mx-auto p-4 sm:p-6">
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <h2 class="card-title text-3xl font-bold mb-6">Create Crop Planting Record</h2>
 
-                <form action="{{ route('crop_plantings.store') }}" method="POST">
+                <!-- Steps -->
+                <ul class="steps steps-horizontal w-full mb-8">
+                    <li class="step step-primary" data-content="1">Basic Info</li>
+                    <li class="step" data-content="2">Location</li>
+                    <li class="step" data-content="3">Additional Details</li>
+                </ul>
+
+                <form id="plantingForm" action="{{ route('crop_plantings.store') }}" method="POST" class="space-y-6">
                     @csrf
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Farmer Selection -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Farmer</span>
-                            </label>
-                            <select name="farmer_id" required class="select select-bordered w-full">
-                                <option value="">Select Farmer</option>
-                                @foreach ($farmers as $farmer)
-                                    <option value="{{ $farmer->id }}">{{ $farmer->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Category Selection -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Category</span>
-                            </label>
-                            <select name="category_id" id="category" required class="select select-bordered w-full">
-                                <option value="">Select Category</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Crop Selection -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Crop</span>
-                            </label>
-                            <select name="crop_id" id="crop" required class="select select-bordered w-full">
-                                <option value="">Select Crop</option>
-                                @foreach ($categories as $category)
-                                    @foreach ($category->crops as $crop)
-                                        <option value="{{ $crop->id }}" data-category="{{ $category->id }}">{{ $crop->name }}</option>
+                    <!-- Step 1: Basic Info -->
+                    <div id="step1" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Farmer Selection -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Farmer</span>
+                                </label>
+                                <select name="farmer_id" required class="select select-bordered w-full">
+                                    <option value="">Select Farmer</option>
+                                    @foreach ($farmers as $farmer)
+                                        <option value="{{ $farmer->id }}">{{ $farmer->name }}</option>
                                     @endforeach
-                                @endforeach
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <!-- Variety Selection -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Variety</span>
-                            </label>
-                            <select name="variety_id" id="variety" required class="select select-bordered w-full">
-                                <option value="">Select Variety</option>
-                                @foreach ($categories as $category)
-                                    @foreach ($category->crops as $crop)
-                                        @foreach ($crop->varieties as $variety)
-                                            <option value="{{ $variety->id }}" data-crop="{{ $crop->id }}">{{ $variety->name }}</option>
+                            <!-- Category Selection -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Category</span>
+                                </label>
+                                <select name="category_id" id="category" required class="select select-bordered w-full">
+                                    <option value="">Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Crop Selection -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Crop</span>
+                                </label>
+                                <select name="crop_id" id="crop" required class="select select-bordered w-full">
+                                    <option value="">Select Crop</option>
+                                    @foreach ($categories as $category)
+                                        @foreach ($category->crops as $crop)
+                                            <option value="{{ $crop->id }}" data-category="{{ $category->id }}">{{ $crop->name }}</option>
                                         @endforeach
                                     @endforeach
-                                @endforeach
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <!-- Planting Date -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Planting Date</span>
-                            </label>
-                            <input type="date" name="planting_date" required class="input input-bordered w-full">
+                            <!-- Variety Selection -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Variety</span>
+                                </label>
+                                <select name="variety_id" id="variety" required class="select select-bordered w-full">
+                                    <option value="">Select Variety</option>
+                                    @foreach ($categories as $category)
+                                        @foreach ($category->crops as $crop)
+                                            @foreach ($crop->varieties as $variety)
+                                                <option value="{{ $variety->id }}" data-crop="{{ $crop->id }}">{{ $variety->name }}</option>
+                                            @endforeach
+                                        @endforeach
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-
-                        <!-- Area Planted -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Area Planted (ha)</span>
-                            </label>
-                            <input type="number" name="area_planted" step="0.01" required class="input input-bordered w-full">
-                        </div>
-
-                        <!-- Quantity -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Quantity</span>
-                            </label>
-                            <input type="number" name="quantity" required class="input input-bordered w-full">
-                        </div>
-
-                        <!-- Expenses -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Expenses</span>
-                            </label>
-                            <input type="number" name="expenses" step="0.01" class="input input-bordered w-full">
-                        </div>
-
-                        <!-- Location -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Location</span>
-                            </label>
-                            <input type="text" name="location" required class="input input-bordered w-full">
-                        </div>
-
-                        <!-- Status -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Status</span>
-                            </label>
-                            <select name="status" required class="select select-bordered w-full">
-                                <option value="standing">Standing</option>
-                                <option value="harvest">Harvest</option>
-                                <option value="harvested">Harvested</option>
-                            </select>
-                        </div>
-
-                        <!-- Remarks -->
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text font-medium">Remarks</span>
-                            </label>
-                            <select name="remarks" required class="select select-bordered w-full">
-                                <option value="newly planted">Newly Planted</option>
-                                <option value="vegetative">Vegetative</option>
-                                <option value="reproductive">Reproductive</option>
-                                <option value="maturing">Maturing</option>
-                            </select>
+                        <div class="flex justify-end">
+                            <button type="button" onclick="validateAndNext(2)" class="btn btn-primary">Next</button>
                         </div>
                     </div>
 
-                    <div class="form-control mt-6">
-                        <button type="submit" class="btn btn-primary w-full md:w-auto">Save Record</button>
+                    <!-- Step 2: Location -->
+                    <div id="step2" class="hidden space-y-4">
+                        <div class="w-full h-[600px] relative">
+                            <div id="map" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;" class="rounded-lg border-2 border-primary"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Latitude</span>
+                                </label>
+                                <input type="text" id="latitude" name="latitude" class="input input-bordered" readonly required>
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Longitude</span>
+                                </label>
+                                <input type="text" id="longitude" name="longitude" class="input input-bordered" readonly required>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button type="button" onclick="prevStep(1)" class="btn btn-ghost">Previous</button>
+                            <button type="button" onclick="validateAndNext(3)" class="btn btn-primary">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Additional Details -->
+                    <div id="step3" class="hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Planting Date -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Planting Date</span>
+                                </label>
+                                <input type="date" name="planting_date" required class="input input-bordered w-full">
+                            </div>
+
+                            <!-- Area Planted -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Area Planted (ha)</span>
+                                </label>
+                                <input type="number" name="area_planted" step="0.01" required class="input input-bordered w-full">
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Quantity</span>
+                                </label>
+                                <input type="number" name="quantity" required class="input input-bordered w-full">
+                            </div>
+
+                            <!-- Expenses -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Expenses</span>
+                                </label>
+                                <input type="number" name="expenses" step="0.01" class="input input-bordered w-full">
+                            </div>
+
+                            <!-- Status -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Status</span>
+                                </label>
+                                <select name="status" required class="select select-bordered w-full">
+                                    <option value="standing">Standing</option>
+                                    <option value="harvest">Harvest</option>
+                                    <option value="harvested">Harvested</option>
+                                </select>
+                            </div>
+
+                            <!-- Remarks -->
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text font-medium">Remarks</span>
+                                </label>
+                                <select name="remarks" required class="select select-bordered w-full">
+                                    <option value="newly planted">Newly Planted</option>
+                                    <option value="vegetative">Vegetative</option>
+                                    <option value="reproductive">Reproductive</option>
+                                    <option value="maturing">Maturing</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button type="button" onclick="prevStep(2)" class="btn btn-ghost">Previous</button>
+                            <button type="submit" class="btn btn-primary">Save Record</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -154,6 +192,163 @@
             let cropId = this.value;
             document.querySelectorAll("#variety option").forEach(option => {
                 option.hidden = option.getAttribute("data-crop") !== cropId;
+            });
+        });
+
+        // Define Marinduque bounds with padding
+        const marinduqueBounds = L.latLngBounds(
+            [13.1089, 121.7813], // Southwest corner with padding
+            [13.5474, 122.2411]  // Northeast corner with padding
+        );
+
+        // Initialize map centered on Marinduque
+        var map = L.map('map', {
+            center: [13.4677, 121.9037], // Marinduque coordinates
+            zoom: 10, // Reduced zoom level to show more area
+            minZoom: 10, // Allow slightly more zoom out
+            maxZoom: 18,
+            maxBounds: marinduqueBounds
+        });
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+
+        // Handle map clicks
+        map.on('click', function(e) {
+            // Only allow placing markers within Marinduque bounds
+            if (marinduqueBounds.contains(e.latlng)) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+
+                // Update hidden inputs
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+
+                // Update or create marker
+                if (marker) {
+                    marker.setLatLng(e.latlng);
+                } else {
+                    marker = L.marker(e.latlng).addTo(map);
+                }
+            }
+        });
+
+        // Add these validation functions
+        function checkFields(fields) {
+            let isValid = true;
+            fields.forEach(field => {
+                if (!field.value) {
+                    field.classList.add('input-error', 'select-error');
+                    isValid = false;
+                } else {
+                    field.classList.remove('input-error', 'select-error');
+                }
+            });
+            return isValid;
+        }
+
+        function validateStep1() {
+            const fields = [
+                document.querySelector('select[name="farmer_id"]'),
+                document.querySelector('select[name="category_id"]'),
+                document.querySelector('select[name="crop_id"]'),
+                document.querySelector('select[name="variety_id"]')
+            ];
+            return checkFields(fields);
+        }
+
+        function validateStep2() {
+            const fields = [
+                document.getElementById('latitude'),
+                document.getElementById('longitude')
+            ];
+            return checkFields(fields);
+        }
+
+        function validateStep3() {
+            const fields = Array.from(document.querySelector('#step3').querySelectorAll('[required]'));
+            return checkFields(fields);
+        }
+
+        // Replace nextStep function with validateAndNext
+        function validateAndNext(step) {
+            let isValid = true;
+
+            switch (step - 1) {
+                case 1:
+                    isValid = validateStep1();
+                    break;
+                case 2:
+                    isValid = validateStep2();
+                    break;
+            }
+
+            if (isValid) {
+                nextStep(step);
+            }
+        }
+
+        // Update button handlers to use validateAndNext
+        document.querySelectorAll('[onclick^="nextStep"]').forEach(btn => {
+            const step = btn.getAttribute('onclick').match(/\d+/)[0];
+            btn.setAttribute('onclick', `validateAndNext(${step})`);
+        });
+
+        // Add form submission validation
+        document.getElementById('plantingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (validateStep3()) {
+                this.submit();
+            }
+        });
+
+        // Step navigation
+        function nextStep(step) {
+            document.querySelectorAll('.step').forEach((el, index) => {
+                if (index <= step - 1) {
+                    el.classList.add('step-primary');
+                } else {
+                    el.classList.remove('step-primary');
+                }
+            });
+            hideAllSteps();
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            if (step === 2) {
+                setTimeout(function() {
+                    map.invalidateSize();
+                }, 100);
+            }
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.step').forEach((el, index) => {
+                if (index < step) {
+                    el.classList.add('step-primary');
+                } else {
+                    el.classList.remove('step-primary');
+                }
+            });
+            hideAllSteps();
+            document.getElementById(`step${step}`).classList.remove('hidden');
+        }
+
+        function hideAllSteps() {
+            document.querySelectorAll('[id^="step"]').forEach(step => {
+                step.classList.add('hidden');
+            });
+        }
+
+        // Add this to your existing script section
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trigger map resize when step 2 is shown
+            document.querySelector('[onclick="nextStep(2)"]').addEventListener('click', function() {
+                setTimeout(function() {
+                    map.invalidateSize();
+                }, 100);
             });
         });
     </script>

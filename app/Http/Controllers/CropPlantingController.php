@@ -55,9 +55,10 @@ class CropPlantingController extends Controller
             'area_planted' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
             'expenses' => 'nullable|numeric|min:0',
-            'remarks' => 'nullable|string',
-            'location' => 'required|string',
+            'remarks' => 'required|string',
             'status' => 'required|in:standing,harvest,harvested',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
@@ -75,11 +76,12 @@ class CropPlantingController extends Controller
             'expenses' => $request->expenses,
             'technician_id' => Auth::id(),
             'remarks' => $request->remarks,
-            'location' => $request->location,
             'status' => $request->status,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
-        return redirect()->route('crop_plantings.index')->with('success', 'Crop planting record added.');
+        return redirect()->route('crop_plantings.index')->with('success', 'Crop planting record added successfully.');
     }
 
     public function edit(CropPlanting $cropPlanting)
@@ -111,13 +113,14 @@ class CropPlantingController extends Controller
             'area_planted' => 'required|numeric|min:0',
             'quantity' => 'required|numeric|min:0',
             'expenses' => 'nullable|numeric|min:0',
-            'remarks' => 'nullable|string',
-            'location' => 'required|string',
+            'remarks' => 'required|string',
             'status' => 'required|in:standing,harvest,harvested',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
-        $expectedHarvestDate = $maturityDays ? \Carbon\Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
+        $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
 
         $cropPlanting->update([
             'farmer_id' => $request->farmer_id,
@@ -130,11 +133,12 @@ class CropPlantingController extends Controller
             'quantity' => $request->quantity,
             'expenses' => $request->expenses,
             'remarks' => $request->remarks,
-            'location' => $request->location,
             'status' => $request->status,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
         ]);
 
-        return redirect()->route('crop_plantings.index')->with('success', 'Crop planting record updated.');
+        return redirect()->route('crop_plantings.index')->with('success', 'Crop planting record updated successfully.');
     }
 
     public function destroy(CropPlanting $cropPlanting)

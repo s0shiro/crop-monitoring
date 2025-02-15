@@ -21,8 +21,9 @@ class CropPlanting extends Model
         'expenses',
         'technician_id',
         'remarks',
-        'location',
         'status',
+        'latitude',
+        'longitude',
     ];
 
     public function farmer()
