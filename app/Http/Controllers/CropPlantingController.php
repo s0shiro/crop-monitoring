@@ -10,7 +10,10 @@ use App\Models\Variety;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Add this line
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
+use App\Models\HvcDetail;
+use App\Models\RiceDetail;
 
 class CropPlantingController extends Controller
 {
@@ -18,14 +21,13 @@ class CropPlantingController extends Controller
 
     public function index()
     {
-        $query = CropPlanting::with(['farmer', 'crop', 'variety']);
+        $query = CropPlanting::with(['farmer', 'crop', 'variety', 'category', 'hvcDetail', 'riceDetail']);
 
-        // If user is technician, only show their records
         if (auth()->user()->hasRole('technician')) {
             $query->where('technician_id', auth()->id());
         }
 
-        $plantings = $query->paginate(10); // Use paginate instead of get
+        $plantings = $query->paginate(10);
         return view('crop_plantings.index', compact('plantings'));
     }
 
@@ -59,36 +61,63 @@ class CropPlantingController extends Controller
             'status' => 'required|in:standing,harvest,harvested',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            // Add new validation rules
+            'classification' => 'required_if:category_name,High Value Crops',
+            'water_supply' => 'required_if:category_name,Rice',
+            'land_type' => 'nullable|required_if:category_name,Rice',
         ]);
 
-        $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
-        $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
+        try {
+            DB::transaction(function () use ($request) {
+                $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
+                $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
 
-        CropPlanting::create([
-            'farmer_id' => $request->farmer_id,
-            'category_id' => $request->category_id,
-            'crop_id' => $request->crop_id,
-            'variety_id' => $request->variety_id,
-            'planting_date' => $request->planting_date,
-            'expected_harvest_date' => $expectedHarvestDate,
-            'area_planted' => $request->area_planted,
-            'quantity' => $request->quantity,
-            'expenses' => $request->expenses,
-            'technician_id' => Auth::id(),
-            'remarks' => $request->remarks,
-            'status' => $request->status,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-        ]);
+                $cropPlanting = CropPlanting::create([
+                    'farmer_id' => $request->farmer_id,
+                    'category_id' => $request->category_id,
+                    'crop_id' => $request->crop_id,
+                    'variety_id' => $request->variety_id,
+                    'planting_date' => $request->planting_date,
+                    'expected_harvest_date' => $expectedHarvestDate,
+                    'area_planted' => $request->area_planted,
+                    'quantity' => $request->quantity,
+                    'expenses' => $request->expenses,
+                    'technician_id' => Auth::id(),
+                    'remarks' => $request->remarks,
+                    'status' => $request->status,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                ]);
 
-        return redirect()->route('crop_plantings.index')->with('success', 'Crop planting record added successfully.');
+                // Handle category-specific details
+                $category = Category::find($request->category_id);
+                if ($category->name === 'High Value Crops') {
+                    HvcDetail::create([
+                        'crop_planting_id' => $cropPlanting->id,
+                        'classification' => $request->classification
+                    ]);
+                } elseif ($category->name === 'Rice') {
+                    RiceDetail::create([
+                        'crop_planting_id' => $cropPlanting->id,
+                        'water_supply' => $request->water_supply,
+                        'land_type' => $request->land_type
+                    ]);
+                }
+            });
+
+            return redirect()->route('crop_plantings.index')
+                ->with('success', 'Crop planting record added successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error creating record: ' . $e->getMessage());
+        }
     }
 
     public function edit(CropPlanting $cropPlanting)
     {
         $this->authorize('update', $cropPlanting);
 
-        // If technician, only show assigned farmers
+        $cropPlanting->load(['hvcDetail', 'riceDetail']); // Add this line
+
         if (auth()->user()->hasRole('technician')) {
             $farmers = Farmer::where('technician_id', auth()->id())->get();
         } else {
@@ -117,28 +146,59 @@ class CropPlantingController extends Controller
             'status' => 'required|in:standing,harvest,harvested',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            'classification' => 'required_if:category_name,High Value Crops',
+            'water_supply' => 'required_if:category_name,Rice',
+            'land_type' => 'nullable|required_if:category_name,Rice',
         ]);
 
-        $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
-        $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
+        try {
+            DB::transaction(function () use ($request, $cropPlanting) {
+                $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
+                $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
 
-        $cropPlanting->update([
-            'farmer_id' => $request->farmer_id,
-            'category_id' => $request->category_id,
-            'crop_id' => $request->crop_id,
-            'variety_id' => $request->variety_id,
-            'planting_date' => $request->planting_date,
-            'expected_harvest_date' => $expectedHarvestDate,
-            'area_planted' => $request->area_planted,
-            'quantity' => $request->quantity,
-            'expenses' => $request->expenses,
-            'remarks' => $request->remarks,
-            'status' => $request->status,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-        ]);
+                $cropPlanting->update([
+                    'farmer_id' => $request->farmer_id,
+                    'category_id' => $request->category_id,
+                    'crop_id' => $request->crop_id,
+                    'variety_id' => $request->variety_id,
+                    'planting_date' => $request->planting_date,
+                    'expected_harvest_date' => $expectedHarvestDate,
+                    'area_planted' => $request->area_planted,
+                    'quantity' => $request->quantity,
+                    'expenses' => $request->expenses,
+                    'remarks' => $request->remarks,
+                    'status' => $request->status,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                ]);
 
-        return redirect()->route('crop_plantings.index')->with('success', 'Crop planting record updated successfully.');
+                // Handle category-specific details
+                $category = Category::find($request->category_id);
+                if ($category->name === 'High Value Crops') {
+                    HvcDetail::updateOrCreate(
+                        ['crop_planting_id' => $cropPlanting->id],
+                        ['classification' => $request->classification]
+                    );
+                    // Delete any existing rice details if category changed
+                    RiceDetail::where('crop_planting_id', $cropPlanting->id)->delete();
+                } elseif ($category->name === 'Rice') {
+                    RiceDetail::updateOrCreate(
+                        ['crop_planting_id' => $cropPlanting->id],
+                        [
+                            'water_supply' => $request->water_supply,
+                            'land_type' => $request->land_type
+                        ]
+                    );
+                    // Delete any existing hvc details if category changed
+                    HvcDetail::where('crop_planting_id', $cropPlanting->id)->delete();
+                }
+            });
+
+            return redirect()->route('crop_plantings.index')
+                ->with('success', 'Crop planting record updated successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error updating record: ' . $e->getMessage());
+        }
     }
 
     public function destroy(CropPlanting $cropPlanting)

@@ -50,4 +50,14 @@ class CropPlanting extends Model
     {
         return $this->belongsTo(User::class, 'technician_id');
     }
+
+    public function hvcDetail()
+    {
+        return $this->hasOne(HvcDetail::class);
+    }
+
+    public function riceDetail()
+    {
+        return $this->hasOne(RiceDetail::class);
+    }
 }

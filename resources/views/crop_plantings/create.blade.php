@@ -77,6 +77,47 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <!-- High Value Crops Classification -->
+                            <div id="hvc-fields" class="form-control w-full hidden">
+                                <label class="label">
+                                    <span class="label-text font-medium">Classification</span>
+                                </label>
+                                <select name="classification" class="select select-bordered w-full">
+                                    <option value="">Select Classification</option>
+                                    <option value="lowland vegetable">Lowland Vegetable</option>
+                                    <option value="upland vegetable">Upland Vegetable</option>
+                                    <option value="legumes">Legumes</option>
+                                    <option value="spice">Spice</option>
+                                    <option value="rootcrop">Rootcrop</option>
+                                    <option value="fruit">Fruit</option>
+                                </select>
+                            </div>
+
+                            <!-- Rice Fields -->
+                            <div id="rice-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-medium">Water Supply</span>
+                                    </label>
+                                    <select name="water_supply" class="select select-bordered w-full">
+                                        <option value="">Select Water Supply</option>
+                                        <option value="irrigated">Irrigated</option>
+                                        <option value="rainfed">Rainfed</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-medium">Land Type</span>
+                                    </label>
+                                    <select name="land_type" class="select select-bordered w-full">
+                                        <option value="">None</option>
+                                        <option value="lowland">Lowland</option>
+                                        <option value="upland">Upland</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex justify-end">
                             <button type="button" onclick="validateAndNext(2)" class="btn btn-primary">Next</button>
@@ -187,6 +228,68 @@
             document.getElementById("crop").value = "";
             document.getElementById("variety").value = "";
         });
+
+        // Add this inside your existing script tag, after the category change event listener
+        document.getElementById("category").addEventListener("change", function() {
+            let categoryId = this.value;
+            let categoryName = this.options[this.selectedIndex].text.trim();
+            let hvcFields = document.getElementById('hvc-fields');
+            let riceFields = document.getElementById('rice-fields');
+
+            // Hide all category-specific fields first
+            hvcFields.classList.add('hidden');
+            riceFields.classList.add('hidden');
+
+            // Reset values when changing categories
+            if (hvcFields.querySelector('select')) {
+                hvcFields.querySelector('select').value = '';
+            }
+            if (riceFields.querySelectorAll('select')) {
+                riceFields.querySelectorAll('select').forEach(select => select.value = '');
+            }
+
+            // Show relevant fields based on category
+            if (categoryName === 'High Value Crops') {
+                hvcFields.classList.remove('hidden');
+            } else if (categoryName === 'Rice') {
+                riceFields.classList.remove('hidden');
+            }
+
+            // Existing category change logic for crops
+            document.querySelectorAll("#crop option").forEach(option => {
+                option.hidden = option.getAttribute("data-category") !== categoryId;
+            });
+            document.getElementById("crop").value = "";
+            document.getElementById("variety").value = "";
+        });
+
+        // Update validateStep1 to include category-specific required fields
+        function validateStep1() {
+            const baseFields = [
+                document.querySelector('select[name="farmer_id"]'),
+                document.querySelector('select[name="category_id"]'),
+                document.querySelector('select[name="crop_id"]'),
+                document.querySelector('select[name="variety_id"]')
+            ];
+
+            // Get the selected category
+            const categorySelect = document.querySelector('select[name="category_id"]');
+            const categoryName = categorySelect.options[categorySelect.selectedIndex].text.trim();
+
+            let additionalFields = [];
+
+            // Add category-specific required fields
+            if (categoryName === 'High Value Crops') {
+                additionalFields.push(document.querySelector('select[name="classification"]'));
+            } else if (categoryName === 'Rice') {
+                additionalFields.push(
+                    document.querySelector('select[name="water_supply"]'),
+                    document.querySelector('select[name="land_type"]')
+                );
+            }
+
+            return checkFields([...baseFields, ...additionalFields]);
+        }
 
         document.getElementById("crop").addEventListener("change", function() {
             let cropId = this.value;

@@ -103,6 +103,58 @@
                                     </select>
                                 </div>
 
+                                <!-- High Value Crops Classification -->
+                                <div id="hvc-fields" class="form-control w-full {{ $cropPlanting->category->name !== 'High Value Crops' ? 'hidden' : '' }}">
+                                    <label class="label">
+                                        <span class="label-text font-medium">Classification</span>
+                                    </label>
+                                    <select name="classification" class="select select-bordered w-full">
+                                        <option value="">Select Classification</option>
+                                        @php
+                                            $classifications = ['lowland vegetable', 'upland vegetable', 'legumes', 'spice', 'rootcrop', 'fruit'];
+                                        @endphp
+                                        @foreach($classifications as $classification)
+                                            <option value="{{ $classification }}"
+                                                {{ $cropPlanting->hvcDetail && $cropPlanting->hvcDetail->classification === $classification ? 'selected' : '' }}>
+                                                {{ ucwords($classification) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Rice Fields -->
+                                <div id="rice-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 {{ $cropPlanting->category->name !== 'Rice' ? 'hidden' : '' }}">
+                                    <div class="form-control w-full">
+                                        <label class="label">
+                                            <span class="label-text font-medium">Water Supply</span>
+                                        </label>
+                                        <select name="water_supply" class="select select-bordered w-full">
+                                            <option value="">Select Water Supply</option>
+                                            <option value="irrigated" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->water_supply === 'irrigated' ? 'selected' : '' }}>
+                                                Irrigated
+                                            </option>
+                                            <option value="rainfed" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->water_supply === 'rainfed' ? 'selected' : '' }}>
+                                                Rainfed
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-control w-full">
+                                        <label class="label">
+                                            <span class="label-text font-medium">Land Type</span>
+                                        </label>
+                                        <select name="land_type" class="select select-bordered w-full">
+                                            <option value="">None</option>
+                                            <option value="lowland" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->land_type === 'lowland' ? 'selected' : '' }}>
+                                                Lowland
+                                            </option>
+                                            <option value="upland" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->land_type === 'upland' ? 'selected' : '' }}>
+                                                Upland
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <!-- Planting Date -->
                                 <div class="form-control">
                                     <label class="label">
@@ -216,6 +268,32 @@
             // Reset crop and variety selections
             cropSelect.value = "";
             varietySelect.innerHTML = '<option value="">Select Variety</option>';
+        });
+
+        document.getElementById("category").addEventListener("change", function() {
+        let categoryId = this.value;
+        let categoryName = this.options[this.selectedIndex].text.trim();
+        let hvcFields = document.getElementById('hvc-fields');
+        let riceFields = document.getElementById('rice-fields');
+
+        // Hide all category-specific fields first
+        hvcFields.classList.add('hidden');
+        riceFields.classList.add('hidden');
+
+        // Reset values when changing categories
+        if (hvcFields.querySelector('select')) {
+            hvcFields.querySelector('select').value = '';
+        }
+        if (riceFields.querySelectorAll('select')) {
+            riceFields.querySelectorAll('select').forEach(select => select.value = '');
+        }
+
+        // Show relevant fields based on category
+        if (categoryName === 'High Value Crops') {
+            hvcFields.classList.remove('hidden');
+        } else if (categoryName === 'Rice') {
+            riceFields.classList.remove('hidden');
+        }
         });
 
         document.getElementById("crop").addEventListener("change", function() {

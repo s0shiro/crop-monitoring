@@ -25,8 +25,10 @@
                             <thead>
                                 <tr class="border-b-2 border-base-200">
                                     <th class="bg-base-100 text-base-content/70">Farmer</th>
+                                    <th class="bg-base-100 text-base-content/70">Category</th>
                                     <th class="bg-base-100 text-base-content/70">Crop</th>
                                     <th class="bg-base-100 text-base-content/70">Variety</th>
+                                    <th class="bg-base-100 text-base-content/70">Type Details</th>
                                     <th class="bg-base-100 text-base-content/70">Planting Date</th>
                                     <th class="bg-base-100 text-base-content/70">Expected Harvest Date</th>
                                     <th class="bg-base-100 text-base-content/70">Status</th>
@@ -37,8 +39,21 @@
                                 @foreach ($plantings as $planting)
                                 <tr class="hover:bg-base-200/50 transition-colors duration-200">
                                     <td>{{ $planting->farmer->name }}</td>
+                                    <td>{{ $planting->category->name }}</td>
                                     <td>{{ $planting->crop->name }}</td>
                                     <td>{{ $planting->variety->name }}</td>
+                                    <td>
+                                        @if($planting->category->name === 'High Value Crops' && $planting->hvcDetail)
+                                            <span class="badge badge-info">{{ $planting->hvcDetail->classification }}</span>
+                                        @elseif($planting->category->name === 'Rice' && $planting->riceDetail)
+                                            <div class="flex flex-col gap-1">
+                                                <span class="badge badge-info">{{ $planting->riceDetail->water_supply }}</span>
+                                                @if($planting->riceDetail->land_type)
+                                                    <span class="badge badge-ghost">{{ $planting->riceDetail->land_type }}</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td>{{ $planting->planting_date }}</td>
                                     <td>{{ $planting->expected_harvest_date }}</td>
                                     <td>{{ ucfirst($planting->status) }}</td>
