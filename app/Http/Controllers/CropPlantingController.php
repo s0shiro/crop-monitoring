@@ -128,6 +128,12 @@ class CropPlantingController extends Controller
         return view('crop_plantings.edit', compact('cropPlanting', 'farmers', 'categories'));
     }
 
+    public function show(CropPlanting $cropPlanting)
+    {
+        $cropPlanting->load(['farmer', 'category', 'crop', 'variety', 'technician', 'hvcDetail', 'riceDetail']);
+        return view('crop_plantings.show', compact('cropPlanting'));
+    }
+
     public function update(Request $request, CropPlanting $cropPlanting)
     {
         $this->authorize('update', $cropPlanting);

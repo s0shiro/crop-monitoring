@@ -58,6 +58,15 @@
                                     <td>{{ $planting->expected_harvest_date }}</td>
                                     <td>{{ ucfirst($planting->status) }}</td>
                                     <td class="text-center">
+                                        <div class="flex items-center justify-center gap-1">
+                                        <a href="{{ route('crop_plantings.show', $planting->id) }}"
+                                            class="btn btn-ghost btn-sm tooltip tooltip-top p-0 h-8 w-8 min-h-8"
+                                            data-tip="View">
+                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto" viewBox="0 0 20 20" fill="currentColor">
+                                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                             </svg>
+                                         </a>
                                         @can('manage crop planting')
                                         <div class="flex items-center justify-center gap-1">
                                             <a href="{{ route('crop_plantings.edit', $planting->id) }}"
@@ -83,6 +92,7 @@
                                             </form>
                                         </div>
                                         @endcan
+                                    </div>
                                     </td>
                                 </tr>
                                 @endforeach

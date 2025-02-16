@@ -99,6 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::middleware('permission:view crop planting')->group(function() {
         Route::get('/crop_plantings', [CropPlantingController::class, 'index'])->name('crop_plantings.index');
 
+        // Move create routes BEFORE the show route
         Route::middleware('permission:manage crop planting')->group(function() {
             Route::get('/crop_plantings/create', [CropPlantingController::class, 'create'])->name('crop_plantings.create');
             Route::post('/crop_plantings', [CropPlantingController::class, 'store'])->name('crop_plantings.store');
@@ -106,6 +107,9 @@ Route::group(['middleware' => ['auth']], function () {
             Route::put('/crop_plantings/{cropPlanting}', [CropPlantingController::class, 'update'])->name('crop_plantings.update');
             Route::delete('/crop_plantings/{cropPlanting}', [CropPlantingController::class, 'destroy'])->name('crop_plantings.destroy');
         });
+
+        // Move show route AFTER create route
+        Route::get('/crop_plantings/{cropPlanting}', [CropPlantingController::class, 'show'])->name('crop_plantings.show');
     });
 });
 
