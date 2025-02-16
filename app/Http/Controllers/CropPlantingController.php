@@ -19,16 +19,59 @@ class CropPlantingController extends Controller
 {
     use AuthorizesRequests; // Add this line
 
-    public function index()
+    public function index(Request $request)
     {
         $query = CropPlanting::with(['farmer', 'crop', 'variety', 'category', 'hvcDetail', 'riceDetail']);
 
+        // Apply technician filter
         if (auth()->user()->hasRole('technician')) {
             $query->where('technician_id', auth()->id());
         }
 
-        $plantings = $query->paginate(10);
-        return view('crop_plantings.index', compact('plantings'));
+        // Apply status filter
+        if ($request->status && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // Apply search filter
+        if ($request->search) {
+            $query->whereHas('farmer', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            })->orWhereHas('crop', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Apply category filter
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Apply date range filter
+        if ($request->date_from) {
+            $query->whereDate('planting_date', '>=', $request->date_from);
+        }
+        if ($request->date_to) {
+            $query->whereDate('planting_date', '<=', $request->date_to);
+        }
+
+        // Get counts for status badges
+        $standingCount = (clone $query)->where('status', 'standing')->count();
+        $harvestCount = (clone $query)->where('status', 'harvest')->count();
+        $harvestedCount = (clone $query)->where('status', 'harvested')->count();
+
+        // Get categories for filter dropdown
+        $categories = Category::all();
+
+        $plantings = $query->latest()->paginate(10);
+
+        return view('crop_plantings.index', compact(
+            'plantings',
+            'categories',
+            'standingCount',
+            'harvestCount',
+            'harvestedCount'
+        ));
     }
 
     public function create()
