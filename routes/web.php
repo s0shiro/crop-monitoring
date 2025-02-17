@@ -84,6 +84,10 @@ Route::group(['middleware' => ['auth']], function () {
         ->middleware('can:create associations')
         ->name('associations.store');
 
+    Route::get('/associations/{association}', [AssociationController::class, 'show'])
+        ->middleware('can:view associations')
+        ->name('associations.show');
+
     Route::get('/associations/{association}/edit', [AssociationController::class, 'edit'])
         ->middleware('can:update associations')
         ->name('associations.edit');

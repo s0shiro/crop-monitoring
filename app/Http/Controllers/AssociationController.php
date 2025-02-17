@@ -43,9 +43,10 @@ class AssociationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Association $association)
     {
-        //
+        $farmers = $association->farmers()->get();
+        return view('associations.show', compact('association', 'farmers'));
     }
 
     /**
