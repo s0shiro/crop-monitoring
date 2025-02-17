@@ -1,75 +1,201 @@
 <x-app-layout>
-    <div class="p-6">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="stats shadow">
+    <div class="container mx-auto p-6">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold">Admin Dashboard</h2>
+            <p class="text-base-content/70 mt-1">Welcome back, {{ auth()->user()->name }}</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Users Stats -->
+            <div class="stats bg-base-100 shadow-xl">
                 <div class="stat">
                     <div class="stat-figure text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
                     </div>
-                    <div class="stat-title">Total Users</div>
-                    <div class="stat-value text-primary">25.6K</div>
-                    <div class="stat-desc">21% more than last month</div>
+                    <div class="stat-title">Users</div>
+                    <div class="stat-value text-primary">2.3K</div>
+                    <div class="stat-desc">↗︎ 12% more</div>
                 </div>
             </div>
 
-            <div class="stats shadow">
+            <!-- Farmers Stats -->
+            <div class="stats bg-base-100 shadow-xl">
                 <div class="stat">
                     <div class="stat-figure text-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                        </svg>
                     </div>
-                    <div class="stat-title">Active Crops</div>
-                    <div class="stat-value text-secondary">2.6K</div>
-                    <div class="stat-desc">14% more than last month</div>
+                    <div class="stat-title">Farmers</div>
+                    <div class="stat-value text-secondary">1.2K</div>
+                    <div class="stat-desc">↗︎ 8% more</div>
                 </div>
             </div>
 
-            <div class="stats shadow">
+            <!-- Crops Stats -->
+            <div class="stats bg-base-100 shadow-xl">
                 <div class="stat">
                     <div class="stat-figure text-accent">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                    </div>
+                    <div class="stat-title">Active Crops</div>
+                    <div class="stat-value text-accent">850</div>
+                    <div class="stat-desc">↗︎ 15% growth</div>
+                </div>
+            </div>
+
+            <!-- Monitoring Stats -->
+            <div class="stats bg-base-100 shadow-xl">
+                <div class="stat">
+                    <div class="stat-figure text-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                     </div>
                     <div class="stat-title">Monitoring Tasks</div>
-                    <div class="stat-value text-accent">86%</div>
-                    <div class="stat-desc">31 tasks remaining</div>
+                    <div class="stat-value text-info">92%</div>
+                    <div class="stat-desc">↗︎ 5% this week</div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="bg-base-100 shadow-xl rounded-box p-6">
-            <h2 class="text-2xl font-bold mb-4">Recent Activity</h2>
-            <div class="overflow-x-auto">
-                <table class="table table-zebra">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Activity</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2024-03-20</td>
-                            <td>Crop Inspection</td>
-                            <td><div class="badge badge-success">Completed</div></td>
-                            <td><button class="btn btn-ghost btn-xs">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>2024-03-19</td>
-                            <td>Irrigation Check</td>
-                            <td><div class="badge badge-warning">Pending</div></td>
-                            <td><button class="btn btn-ghost btn-xs">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>2024-03-18</td>
-                            <td>Pest Control</td>
-                            <td><div class="badge badge-error">Delayed</div></td>
-                            <td><button class="btn btn-ghost btn-xs">View</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Quick Actions -->
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body">
+                <h3 class="card-title mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <a href="{{ route('users.index') }}" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        Manage Users
+                    </a>
+                    <a href="{{ route('farmers.index') }}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                        </svg>
+                        Manage Farmers
+                    </a>
+                    <a href="{{ route('crops.index') }}" class="btn btn-accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Manage Crops
+                    </a>
+                    <a href="{{ route('associations.index') }}" class="btn btn-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Associations
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Activity -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Recent Activity</h3>
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="flex items-center gap-2">
+                                        <div class="avatar placeholder">
+                                            <div class="bg-neutral text-neutral-content rounded-full w-8">
+                                                <span>JD</span>
+                                            </div>
+                                        </div>
+                                        <span>John Doe</span>
+                                    </td>
+                                    <td>Created new crop record</td>
+                                    <td>5 mins ago</td>
+                                </tr>
+                                <tr>
+                                    <td class="flex items-center gap-2">
+                                        <div class="avatar placeholder">
+                                            <div class="bg-neutral text-neutral-content rounded-full w-8">
+                                                <span>AS</span>
+                                            </div>
+                                        </div>
+                                        <span>Alice Smith</span>
+                                    </td>
+                                    <td>Updated farmer profile</td>
+                                    <td>2 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td class="flex items-center gap-2">
+                                        <div class="avatar placeholder">
+                                            <div class="bg-neutral text-neutral-content rounded-full w-8">
+                                                <span>RJ</span>
+                                            </div>
+                                        </div>
+                                        <span>Robert Johnson</span>
+                                    </td>
+                                    <td>Added new monitoring task</td>
+                                    <td>5 hours ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Overview -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">System Overview</h3>
+                    <div class="space-y-4">
+                        <!-- Server Status -->
+                        <div class="flex justify-between items-center p-4 bg-base-200 rounded-lg">
+                            <div>
+                                <p class="font-medium">Server Status</p>
+                                <p class="text-sm text-base-content/70">All systems operational</p>
+                            </div>
+                            <div class="badge badge-success gap-2">
+                                <span class="animate-pulse w-2 h-2 bg-current rounded-full"></span>
+                                Online
+                            </div>
+                        </div>
+
+                        <!-- Storage Usage -->
+                        <div class="p-4 bg-base-200 rounded-lg">
+                            <div class="flex justify-between mb-2">
+                                <p class="font-medium">Storage Usage</p>
+                                <p class="text-sm">65%</p>
+                            </div>
+                            <progress class="progress progress-primary w-full" value="65" max="100"></progress>
+                        </div>
+
+                        <!-- Latest Backup -->
+                        <div class="flex justify-between items-center p-4 bg-base-200 rounded-lg">
+                            <div>
+                                <p class="font-medium">Latest Backup</p>
+                                <p class="text-sm text-base-content/70">2 hours ago</p>
+                            </div>
+                            <button class="btn btn-square btn-ghost btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
