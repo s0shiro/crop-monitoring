@@ -15,13 +15,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
-<body class="font-sans antialiased">
-    <div class="drawer lg:drawer-open">
+<body class="font-sans antialiased overflow-hidden">
+    <div class="drawer lg:drawer-open h-screen">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
 
-        <div class="drawer-content flex flex-col min-h-screen">
-           <!-- Replace the existing navbar with this improved version -->
-            <div class="w-full navbar bg-base-100 shadow-lg border-b border-base-200">
+        <div class="drawer-content flex flex-col h-screen">
+            <!-- Fixed Navbar -->
+            <div class="sticky top-0 z-30 w-full navbar bg-base-100 shadow-lg border-b border-base-200 backdrop-blur-sm bg-opacity-90">
                 <!-- Mobile Menu -->
                 <div class="flex-none lg:hidden">
                     <label for="my-drawer" class="btn btn-square btn-ghost drawer-button">
@@ -115,8 +115,8 @@
                 </div>
             </div>
 
-            <!-- Main Content -->
-            <main class="flex-1">
+            <!-- Main Content with top padding -->
+            <main class="flex-1 pt-2 overflow-y-auto scroll-smooth" style="scroll-behavior: smooth;">
                 {{ $slot }}
             </main>
         </div>

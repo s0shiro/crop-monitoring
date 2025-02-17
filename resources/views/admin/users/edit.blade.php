@@ -66,18 +66,29 @@
                 <label for="permissions" class="label">
                     <span class="label-text">Permissions</span>
                 </label>
-                <div class="dropdown">
+                <div class="dropdown" x-data="{ search: '' }">
                     <label tabindex="0" class="btn m-1">Select Permissions</label>
-                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52" style="z-index: 50;">
-                        @foreach ($permissions as $permission)
-                            <li>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" name="permissions[]" value="{{ $permission->name }}" {{ $user->hasPermissionTo($permission->name) ? 'checked' : '' }} class="checkbox">
-                                    <span class="ml-2">{{ $permission->name }}</span>
-                                </label>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div tabindex="0" class="dropdown-content bg-base-100 rounded-box shadow-xl p-4"
+                         style="width: 600px; max-height: 500px; z-index: 50;">
+                        <div class="mb-4">
+                            <input type="text" x-model="search"
+                                   placeholder="Search permissions..."
+                                   class="input input-bordered w-full">
+                        </div>
+                        <div class="overflow-y-auto" style="max-height: 400px;">
+                            <div class="grid grid-cols-2 gap-4">
+                                @foreach ($permissions as $permission)
+                                    <label class="flex items-center p-2 hover:bg-base-200 rounded"
+                                           x-show="!search || '{{ $permission->name }}'.toLowerCase().includes(search.toLowerCase())">
+                                        <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                               {{ $user->hasPermissionTo($permission->name) ? 'checked' : '' }}
+                                               class="checkbox checkbox-primary checkbox-sm">
+                                        <span class="ml-2 text-sm">{{ $permission->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
