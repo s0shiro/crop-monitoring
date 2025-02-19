@@ -134,6 +134,65 @@
                             <div id="map" class="w-full h-[400px] rounded-xl"></div>
                         </div>
                     </div>
+
+                    <!-- Inspections -->
+                    <div class="card bg-base-200 md:col-span-2">
+                        <div class="card-body">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-semibold text-lg">Inspections</h3>
+                                @if($cropPlanting->status === 'standing')
+                                    @can('create inspections')
+                                        <a href="{{ route('crop_inspections.create', $cropPlanting->id) }}"
+                                           class="btn btn-primary btn-sm gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                                            </svg>
+                                            Add Inspection
+                                        </a>
+                                    @endcan
+                                @endif
+                            </div>
+
+                            @if($cropPlanting->inspections->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="table w-full">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Technician</th>
+                                                <th>Damaged Area</th>
+                                                <th>Remarks</th>
+                                                <th class="text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($cropPlanting->inspections as $inspection)
+                                                <tr>
+                                                    <td>{{ $inspection->inspection_date }}</td>
+                                                    <td>{{ $inspection->technician->name }}</td>
+                                                    <td>{{ $inspection->damaged_area }} ha</td>
+                                                    <td>{{ Str::limit($inspection->remarks, 30) }}</td>
+                                                    <td class="text-right">
+                                                        @can('update inspections')
+                                                        <a href="{{ route('crop_inspections.edit', $inspection->id) }}"
+                                                           class="btn btn-ghost btn-xs">Edit</a>
+                                                        @endcan
+                                                        <a href="{{ route('crop_inspections.show', $inspection->id) }}"
+                                                           class="btn btn-ghost btn-xs">View</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-4 text-base-content/70">
+                                    No inspections recorded yet.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

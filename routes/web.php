@@ -12,6 +12,7 @@ use App\Http\Controllers\VarietyController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\CropPlantingController;
+use App\Http\Controllers\CropInspectionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -114,6 +115,30 @@ Route::group(['middleware' => ['auth']], function () {
 
         // Move show route AFTER create route
         Route::get('/crop_plantings/{cropPlanting}', [CropPlantingController::class, 'show'])->name('crop_plantings.show');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+        // Inspections routes with permissions
+        Route::middleware('permission:view inspections')->group(function() {
+            Route::get('/inspections', [CropInspectionController::class, 'index'])
+                ->name('crop_inspections.index');
+            Route::get('/inspections/{inspection}', [CropInspectionController::class, 'show'])
+                ->name('crop_inspections.show');
+        });
+
+        Route::middleware('permission:create inspections')->group(function() {
+            Route::get('/inspections/create/{plantingId}', [CropInspectionController::class, 'create'])
+                ->name('crop_inspections.create');
+            Route::post('/inspections/{plantingId}', [CropInspectionController::class, 'store'])
+                ->name('crop_inspections.store');
+        });
+
+        Route::middleware('permission:update inspections')->group(function() {
+            Route::get('/inspections/{inspection}/edit', [CropInspectionController::class, 'edit'])
+                ->name('crop_inspections.edit');
+            Route::put('/inspections/{inspection}', [CropInspectionController::class, 'update'])
+                ->name('crop_inspections.update');
+        });
     });
 });
 

@@ -60,4 +60,9 @@ class CropPlanting extends Model
     {
         return $this->hasOne(RiceDetail::class);
     }
+
+    public function inspections()
+    {
+        return $this->hasMany(CropInspection::class);
+    }
 }

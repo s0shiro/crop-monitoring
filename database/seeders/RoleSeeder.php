@@ -37,6 +37,10 @@ class RoleSeeder extends Seeder
             'view associations',
             'view crop planting',
             'manage crop planting',
+            'view inspections',
+            'create inspections',
+            'update inspections',
+            'delete inspections',
         ];
 
         foreach ($permissions as $permission) {
@@ -44,19 +48,20 @@ class RoleSeeder extends Seeder
         }
 
         // Assign all permissions to admin
-        $admin->syncPermissions(Permission::whereNotIn('name', ['manage crop planting'])->get());
+        $admin->syncPermissions(Permission::whereNotIn('name', ['manage crop planting', 'create inspections'])->get());
 
         // Assign specific permissions to technician
         $technician->syncPermissions([
             'create crops', 'update crops', 'view reports',
             'create farmers', 'update farmers', 'view farmers', 'view associations',
-            'view crop planting', 'manage crop planting'
+            'view crop planting', 'manage crop planting', 'create inspections', 'update inspections', 'view inspections'
         ]);
 
         // Assign specific permissions to coordinator
         $coordinator->syncPermissions([
             'view reports', 'view farmers',
-            'view crop planting'
+            'view crop planting',
+            'view inspections'
         ]);
     }
 }
