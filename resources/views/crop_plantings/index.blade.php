@@ -1,97 +1,142 @@
 <x-app-layout>
     <div class="container mx-auto p-6">
-        <!-- Header Section -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-3xl font-bold text-base-content">Crop Planting Records</h2>
-                <p class="text-base-content/70 mt-1">Track and manage crop planting activities</p>
+        <!-- Header Section with Stats -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-4xl font-bold text-base-content">Crop Planting Records</h2>
+                    <p class="text-base-content/70 mt-2">Track and manage crop planting activities</p>
+                </div>
+                @can('manage crop planting')
+                <a href="{{ route('crop_plantings.create') }}" class="btn btn-primary btn-md gap-2 normal-case">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    New Planting Record
+                </a>
+                @endcan
             </div>
-            @can('manage crop planting')
-            <a href="{{ route('crop_plantings.create') }}" class="btn btn-primary btn-md gap-2 normal-case">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                New Planting Record
-            </a>
-            @endcan
+
+            <!-- Quick Stats -->
+            <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-base-200 w-full">
+                <div class="stat">
+                    <div class="stat-figure text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                    </div>
+                    <div class="stat-title">Total Area</div>
+                    <div class="stat-value text-primary">{{ number_format($plantings->sum('area_planted'), 2) }}</div>
+                    <div class="stat-desc">hectares</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-figure text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <div class="stat-title">Standing Crops</div>
+                    <div class="stat-value text-secondary">{{ $standingCount }}</div>
+                    <div class="stat-desc">Active plantings</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-figure text-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="stat-title">For Harvest</div>
+                    <div class="stat-value text-warning">{{ $harvestCount }}</div>
+                    <div class="stat-desc">in next 7 days</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-figure text-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="stat-title">Total Expenses</div>
+                    <div class="stat-value text-info">₱{{ number_format($plantings->sum('expenses'), 0) }}</div>
+                    <div class="stat-desc">All plantings</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Filters Section -->
-        <div class="card bg-base-100 shadow-lg mb-6">
+        <!-- Enhanced Filters Section -->
+        <div class="card bg-base-100 shadow-lg mb-8">
             <div class="card-body">
-                <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- Search -->
-                    <div class="form-control">
-                        <input type="text" name="search" value="{{ request('search') }}"
-                               placeholder="Search farmer or crop..."
-                               class="input input-bordered w-full">
-                    </div>
+                <form method="GET" class="space-y-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <!-- Search and Category Filter -->
+                        <div class="flex gap-2">
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Search farmer or crop..."
+                                class="input input-bordered flex-1">
+                            <select name="category" class="select select-bordered w-1/3">
+                                <option value="">All Categories</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                            {{ request('category') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <!-- Category Filter -->
-                    <div class="form-control">
-                        <select name="category" class="select select-bordered w-full">
-                            <option value="">All Categories</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}"
-                                        {{ request('category') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Date Range -->
-                    <div class="form-control">
-                        <input type="date" name="date_from" value="{{ request('date_from') }}"
-                               class="input input-bordered w-full"
-                               placeholder="From Date">
-                    </div>
-                    <div class="form-control">
+                        <!-- Date Range Filter -->
                         <div class="join w-full">
+                            <input type="date" name="date_from" value="{{ request('date_from') }}"
+                                   class="input input-bordered join-item w-1/3"
+                                   placeholder="From Date">
                             <input type="date" name="date_to" value="{{ request('date_to') }}"
-                                   class="input input-bordered join-item w-full"
+                                   class="input input-bordered join-item w-1/3"
                                    placeholder="To Date">
-                            <button type="submit" class="btn btn-primary join-item">Filter</button>
+                            <button type="submit" class="btn btn-primary join-item flex-1 gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                                </svg>
+                                Filter
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Status Tabs -->
-        <div class="tabs tabs-boxed bg-base-100 p-2 mb-6">
+        <!-- Enhanced Status Tabs -->
+        <div class="tabs tabs-lifted mb-8">
             <a href="{{ route('crop_plantings.index', ['status' => 'all']) }}"
-               class="tab {{ request('status', 'all') === 'all' ? 'tab-active' : '' }}">
+               class="tab tab-lg {{ request('status', 'all') === 'all' ? 'tab-active' : '' }}">
                 All Records
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'standing']) }}"
-               class="tab {{ request('status') === 'standing' ? 'tab-active' : '' }}">
+               class="tab tab-lg {{ request('status') === 'standing' ? 'tab-active' : '' }}">
                 Standing
                 <div class="badge badge-sm badge-success ml-2">{{ $standingCount }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'harvest']) }}"
-               class="tab {{ request('status') === 'harvest' ? 'tab-active' : '' }}">
+               class="tab tab-lg {{ request('status') === 'harvest' ? 'tab-active' : '' }}">
                 Ready to Harvest
                 <div class="badge badge-sm badge-warning ml-2">{{ $harvestCount }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'partially harvested']) }}"
-               class="tab {{ request('status') === 'partially harvested' ? 'tab-active' : '' }}">
+               class="tab tab-lg {{ request('status') === 'partially harvested' ? 'tab-active' : '' }}">
                 Partially Harvested
                 <div class="badge badge-sm badge-warning ml-2">{{ $partiallyHarvestedCount }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'harvested']) }}"
-               class="tab {{ request('status') === 'harvested' ? 'tab-active' : '' }}">
+               class="tab tab-lg {{ request('status') === 'harvested' ? 'tab-active' : '' }}">
                 Harvested
                 <div class="badge badge-sm badge-info ml-2">{{ $harvestedCount }}</div>
             </a>
         </div>
 
         @if($plantings->count() > 0)
-            <!-- Table Card -->
+            <!-- Enhanced Table Card -->
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body p-0">
                     <div class="overflow-x-auto">
-                        <table class="table w-full">
+                        <table class="table table-zebra">
                             <thead>
                                 <tr class="border-b-2 border-base-200">
                                     <th class="bg-base-100 text-base-content/70">Farmer</th>
@@ -107,7 +152,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($plantings as $planting)
-                                <tr class="hover:bg-base-200/50 transition-colors duration-200">
+                                <tr class="hover">
                                     <td>{{ $planting->farmer->name }}</td>
                                     <td>{{ $planting->category->name }}</td>
                                     <td>{{ $planting->crop->name }}</td>
@@ -145,43 +190,28 @@
                                     @endswitch
                                     </td>
                                     <td class="text-center">
-                                        <div class="flex items-center justify-center gap-1">
-                                        <a href="{{ route('crop_plantings.show', $planting->id) }}"
-                                            class="btn btn-ghost btn-sm tooltip tooltip-top p-0 h-8 w-8 min-h-8"
-                                            data-tip="View">
-                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto" viewBox="0 0 20 20" fill="currentColor">
-                                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                             </svg>
-                                         </a>
-                                        @can('manage crop planting')
-                                        <div class="flex items-center justify-center gap-1">
-                                            @can('manage crop planting')
-                                            <a href="{{ route('crop_plantings.edit', $planting->id) }}"
-                                               class="btn btn-ghost btn-sm tooltip tooltip-top p-0 h-8 w-8 min-h-8"
-                                               data-tip="Edit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        <div class="dropdown dropdown-end">
+                                            <label tabindex="0" class="btn btn-ghost btn-sm m-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                                 </svg>
-                                            </a>
-                                            @endcan
-                                            <form action="{{ route('crop_plantings.destroy', $planting->id) }}"
-                                                  method="POST"
-                                                  class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="btn btn-ghost btn-sm tooltip tooltip-top p-0 h-8 w-8 min-h-8 text-error"
-                                                        data-tip="Delete"
-                                                        onclick="return confirm('Are you sure?')">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            </label>
+                                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                                <li><a href="{{ route('crop_plantings.show', $planting->id) }}">View Details</a></li>
+                                                @can('manage crop planting')
+                                                <li><a href="{{ route('crop_plantings.edit', $planting->id) }}">Edit Record</a></li>
+                                                <li>
+                                                    <form action="{{ route('crop_plantings.destroy', $planting->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-error" onclick="return confirm('Are you sure?')">
+                                                            Delete Record
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                @endcan
+                                            </ul>
                                         </div>
-                                        @endcan
-                                    </div>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -191,47 +221,33 @@
                 </div>
             </div>
 
-            <!-- Statistics Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                <div class="stat bg-base-100 shadow rounded-box">
-                    <div class="stat-title">Total Area</div>
-                    <div class="stat-value text-primary">{{ number_format($plantings->sum('area_planted'), 2) }} ha</div>
-                </div>
-                <div class="stat bg-base-100 shadow rounded-box">
-                    <div class="stat-title">Total Plantings</div>
-                    <div class="stat-value">{{ $plantings->count() }}</div>
-                </div>
-                <div class="stat bg-base-100 shadow rounded-box">
-                    <div class="stat-title">Expected Harvest</div>
-                    <div class="stat-value text-warning">{{ $harvestCount }}</div>
-                    <div class="stat-desc">In next 7 days</div>
-                </div>
-                <div class="stat bg-base-100 shadow rounded-box">
-                    <div class="stat-title">Total Expenses</div>
-                    <div class="stat-value text-info">₱{{ number_format($plantings->sum('expenses'), 2) }}</div>
-                </div>
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-6">
+            <!-- Enhanced Pagination -->
+            <div class="mt-8">
                 {{ $plantings->withQueryString()->links() }}
             </div>
         @else
-            <!-- Empty State -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body items-center text-center py-12">
-                    <div class="text-6xl mb-4">🌱</div>
-                    <h2 class="card-title text-2xl mb-2">No Records Found</h2>
-                    <p class="text-base-content/60 mb-6">
-                        @if(request()->has('search') || request()->has('category') || request()->has('date_from'))
-                            No records match your search criteria. Try adjusting your filters.
-                        @else
-                            Start tracking your crop plantings by creating your first record.
-                        @endif
-                    </p>
-                    @if(request()->has('search') || request()->has('category') || request()->has('date_from'))
-                        <a href="{{ route('crop_plantings.index') }}" class="btn btn-primary">Clear Filters</a>
-                    @endif
+            <!-- Enhanced Empty State -->
+            <div class="hero bg-base-200 rounded-box">
+                <div class="hero-content text-center py-16">
+                    <div class="max-w-md">
+                        <div class="text-6xl mb-4">🌱</div>
+                        <h2 class="text-3xl font-bold mb-4">No Records Found</h2>
+                        <p class="text-base-content/60 mb-6">
+                            @if(request()->has('search') || request()->has('category') || request()->has('date_from'))
+                                No records match your search criteria. Try adjusting your filters.
+                            @else
+                                Start tracking your crop plantings by creating your first record.
+                            @endif
+                        </p>
+                        <div class="flex justify-center gap-4">
+                            @if(request()->has('search') || request()->has('category') || request()->has('date_from'))
+                                <a href="{{ route('crop_plantings.index') }}" class="btn btn-primary">Clear Filters</a>
+                            @endif
+                            @can('manage crop planting')
+                                <a href="{{ route('crop_plantings.create') }}" class="btn btn-accent">Add First Record</a>
+                            @endcan
+                        </div>
+                    </div>
                 </div>
             </div>
         @endif
