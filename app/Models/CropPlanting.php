@@ -24,6 +24,16 @@ class CropPlanting extends Model
         'status',
         'latitude',
         'longitude',
+        'harvested_area',
+        'remaining_area'
+    ];
+
+    protected $casts = [
+        'planting_date' => 'date',
+        'expected_harvest_date' => 'date',
+        'area_planted' => 'decimal:2',
+        'harvested_area' => 'decimal:2',
+        'remaining_area' => 'decimal:2'
     ];
 
     public function farmer()
@@ -64,5 +74,37 @@ class CropPlanting extends Model
     public function inspections()
     {
         return $this->hasMany(CropInspection::class);
+    }
+
+    public function harvestReports()
+    {
+        return $this->hasMany(HarvestReport::class);
+    }
+
+    // Harvest tracking methods
+    public function canBeHarvested(): bool
+    {
+        return ($this->status === 'harvest' || $this->status === 'partially harvested') && $this->remaining_area > 0;
+    }
+
+    public function getHarvestProgressAttribute()
+    {
+        if ($this->area_planted == 0) return 0;
+        return ($this->harvested_area / $this->area_planted) * 100;
+    }
+
+    public function updateHarvestAreas($harvestedArea)
+    {
+        $this->harvested_area += $harvestedArea;
+        $this->remaining_area = max(0, $this->area_planted - $this->harvested_area);
+
+        // Update status based on harvest progress
+        if ($this->remaining_area <= 0) {
+            $this->status = 'harvested';
+        } elseif ($this->harvested_area > 0) {
+            $this->status = 'partially harvested';
+        }
+
+        return $this->save();
     }
 }

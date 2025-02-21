@@ -74,6 +74,11 @@
                 Ready to Harvest
                 <div class="badge badge-sm badge-warning ml-2">{{ $harvestCount }}</div>
             </a>
+            <a href="{{ route('crop_plantings.index', ['status' => 'partially harvested']) }}"
+               class="tab {{ request('status') === 'partially harvested' ? 'tab-active' : '' }}">
+                Partially Harvested
+                <div class="badge badge-sm badge-warning ml-2">{{ $partiallyHarvestedCount }}</div>
+            </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'harvested']) }}"
                class="tab {{ request('status') === 'harvested' ? 'tab-active' : '' }}">
                 Harvested
@@ -123,18 +128,21 @@
                                     <td>{{ $planting->expected_harvest_date }}</td>
                                     <td>
                                         @switch($planting->status)
-                                            @case('standing')
-                                                <span class="badge badge-success">Standing</span>
-                                                @break
-                                            @case('harvest')
-                                                <span class="badge badge-warning">Ready to Harvest</span>
-                                                @break
-                                            @case('harvested')
-                                                <span class="badge badge-info">Harvested</span>
-                                                @break
-                                            @default
-                                                <span class="badge">{{ ucfirst($planting->status) }}</span>
-                                        @endswitch
+                                        @case('standing')
+                                            <span class="badge badge-success">Standing</span>
+                                            @break
+                                        @case('harvest')
+                                            <span class="badge badge-warning">Ready to Harvest</span>
+                                            @break
+                                        @case('partially harvested')
+                                            <span class="badge badge-warning">Partially Harvested</span>
+                                            @break
+                                        @case('harvested')
+                                            <span class="badge badge-info">Harvested</span>
+                                            @break
+                                        @default
+                                            <span class="badge">{{ ucfirst($planting->status) }}</span>
+                                    @endswitch
                                     </td>
                                     <td class="text-center">
                                         <div class="flex items-center justify-center gap-1">

@@ -160,7 +160,11 @@
                                     <label class="label">
                                         <span class="label-text font-medium">Planting Date</span>
                                     </label>
-                                    <input type="date" name="planting_date" value="{{ $cropPlanting->planting_date }}" class="input input-bordered" required>
+                                    <input type="date"
+                                           name="planting_date"
+                                           value="{{ old('planting_date', $cropPlanting->planting_date->format('Y-m-d')) }}"
+                                           class="input input-bordered"
+                                           required>
                                 </div>
 
                                 <!-- Area Planted -->

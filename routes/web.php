@@ -13,6 +13,7 @@ use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\CropPlantingController;
 use App\Http\Controllers\CropInspectionController;
+use App\Http\Controllers\HarvestReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -138,6 +139,22 @@ Route::group(['middleware' => ['auth']], function () {
                 ->name('crop_inspections.edit');
             Route::put('/inspections/{inspection}', [CropInspectionController::class, 'update'])
                 ->name('crop_inspections.update');
+        });
+
+        // Harvest Reports routes
+        Route::middleware('permission:view crop planting')->group(function() {
+            Route::get('/harvest-reports', [HarvestReportController::class, 'index'])
+                ->name('harvest_reports.index');
+
+            Route::get('/harvest-reports/{report}', [HarvestReportController::class, 'show'])
+                ->name('harvest_reports.show');
+
+            Route::middleware('permission:manage crop planting')->group(function() {
+                Route::get('/harvest-reports/create/{plantingId}', [HarvestReportController::class, 'create'])
+                    ->name('harvest_reports.create');
+                Route::post('/harvest-reports/{plantingId}', [HarvestReportController::class, 'store'])
+                    ->name('harvest_reports.store');
+            });
         });
     });
 });

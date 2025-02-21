@@ -58,6 +58,7 @@ class CropPlantingController extends Controller
         // Get counts for status badges
         $standingCount = (clone $query)->where('status', 'standing')->count();
         $harvestCount = (clone $query)->where('status', 'harvest')->count();
+        $partiallyHarvestedCount = CropPlanting::where('status', 'partially harvested')->count();
         $harvestedCount = (clone $query)->where('status', 'harvested')->count();
 
         // Get categories for filter dropdown
@@ -70,6 +71,7 @@ class CropPlantingController extends Controller
             'categories',
             'standingCount',
             'harvestCount',
+            'partiallyHarvestedCount',
             'harvestedCount'
         ));
     }
@@ -123,6 +125,8 @@ class CropPlantingController extends Controller
                     'planting_date' => $request->planting_date,
                     'expected_harvest_date' => $expectedHarvestDate,
                     'area_planted' => $request->area_planted,
+                    'harvested_area' => 0, // Add this
+                    'remaining_area' => $request->area_planted, // Add this
                     'quantity' => $request->quantity,
                     'expenses' => $request->expenses,
                     'technician_id' => Auth::id(),

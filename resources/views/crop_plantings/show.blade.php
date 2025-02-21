@@ -193,6 +193,71 @@
                             @endif
                         </div>
                     </div>
+
+                    <!-- Harvest Progress Section -->
+                    @if($cropPlanting->status === 'harvest' || $cropPlanting->status === 'partially harvested')
+                    <div class="card bg-base-200 md:col-span-2">
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-medium">Harvest Progress</p>
+                                        <p>Area Planted: {{ number_format($cropPlanting->area_planted, 2) }} ha</p>
+                                        <p>Area Harvested: {{ number_format($cropPlanting->harvested_area, 2) }} ha</p>
+                                        <p>Remaining Area: {{ number_format($cropPlanting->remaining_area, 2) }} ha</p>
+                                    </div>
+                                    @can('manage crop planting')
+                                        @if($cropPlanting->canBeHarvested())
+                                            <a href="{{ route('harvest_reports.create', $cropPlanting->id) }}"
+                                            class="btn btn-primary">
+                                                Record Harvest
+                                            </a>
+                                        @endif
+                                    @endcan
+                                </div>
+                                <progress class="progress w-full mt-2"
+                                        value="{{ $cropPlanting->harvest_progress }}"
+                                        max="100"></progress>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Harvest Reports List -->
+                    @if($cropPlanting->harvestReports->count() > 0)
+                        <div class="card bg-base-200 md:col-span-2">
+                            <div class="card-body">
+                                <h3 class="font-semibold text-lg mb-4">Harvest Reports</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="table w-full">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Area Harvested</th>
+                                                <th>Total Yield</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($cropPlanting->harvestReports as $report)
+                                                <tr>
+                                                    <td>{{ $report->harvest_date->format('M d, Y') }}</td>
+                                                    <td>{{ number_format($report->area_harvested, 2) }} ha</td>
+                                                    <td>{{ number_format($report->total_yield, 2) }} kg</td>
+                                                    <td>
+                                                        <a href="{{ route('harvest_reports.show', $report) }}"
+                                                           class="btn btn-sm btn-ghost">
+                                                            View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
