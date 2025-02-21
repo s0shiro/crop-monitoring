@@ -45,8 +45,26 @@ class AssociationController extends Controller
      */
     public function show(Association $association)
     {
-        $farmers = $association->farmers()->get();
-        return view('associations.show', compact('association', 'farmers'));
+        $query = $association->farmers();
+
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('rsbsa', 'like', "%{$search}%")
+                  ->orWhere('barangay', 'like', "%{$search}%")
+                  ->orWhere('municipality', 'like', "%{$search}%");
+            });
+        }
+
+        $farmers = $query->paginate(10);
+
+        $genderStats = [
+            'male' => $association->farmers()->where('gender', 'Male')->count(),
+            'female' => $association->farmers()->where('gender', 'Female')->count(),
+        ];
+
+        return view('associations.show', compact('association', 'farmers', 'genderStats'));
     }
 
     /**
