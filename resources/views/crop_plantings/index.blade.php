@@ -7,18 +7,27 @@
                     <h2 class="text-4xl font-bold text-base-content">Crop Planting Records</h2>
                     <p class="text-base-content/70 mt-2">Track and manage crop planting activities</p>
                 </div>
-                @can('manage crop planting')
-                <a href="{{ route('crop_plantings.create') }}" class="btn btn-primary btn-md gap-2 normal-case">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    New Planting Record
-                </a>
-                @endcan
+                <div class="flex gap-2">
+                    <button onclick="toggleStats()"
+                            class="btn btn-ghost btn-circle tooltip tooltip-left"
+                            data-tip="Toggle Statistics Panel">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </button>
+                    @can('manage crop planting')
+                    <a href="{{ route('crop_plantings.create') }}" class="btn btn-primary btn-md gap-2 normal-case">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        New Planting Record
+                    </a>
+                    @endcan
+                </div>
             </div>
 
-            <!-- Quick Stats -->
-            <div class="stats stats-vertical lg:stats-horizontal shadow-lg bg-base-200 w-full">
+            <!-- Quick Stats with Toggle -->
+            <div id="statsSection" class="stats stats-vertical lg:stats-horizontal shadow-lg bg-base-200 w-full transition-all duration-300">
                 <div class="stat">
                     <div class="stat-figure text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -252,4 +261,25 @@
             </div>
         @endif
     </div>
+
+    <!-- Add this script section at the bottom of the layout -->
+    @push('scripts')
+    <script>
+        function toggleStats() {
+            const statsSection = document.getElementById('statsSection');
+            statsSection.classList.toggle('hidden');
+            // Store the preference in localStorage
+            localStorage.setItem('statsVisible', !statsSection.classList.contains('hidden'));
+        }
+
+        // On page load, check localStorage for preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const statsSection = document.getElementById('statsSection');
+            const statsVisible = localStorage.getItem('statsVisible');
+            if (statsVisible === 'false') {
+                statsSection.classList.add('hidden');
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>
