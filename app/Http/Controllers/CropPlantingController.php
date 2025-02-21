@@ -23,17 +23,21 @@ class CropPlantingController extends Controller
     {
         $query = CropPlanting::with(['farmer', 'crop', 'variety', 'category', 'hvcDetail', 'riceDetail']);
 
-        // Apply technician filter
+        // Apply role-based filters
         if (auth()->user()->hasRole('technician')) {
             $query->where('technician_id', auth()->id());
+        } elseif (auth()->user()->hasRole('coordinator')) {
+            // Get IDs of technicians under this coordinator
+            $technicianIds = auth()->user()->technicians->pluck('id');
+            $query->whereIn('technician_id', $technicianIds);
         }
+        // Admin can see all records (no filter needed)
 
-        // Apply status filter
+        // Rest of the existing filters
         if ($request->status && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
-        // Apply search filter
         if ($request->search) {
             $query->whereHas('farmer', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%');
@@ -42,12 +46,10 @@ class CropPlantingController extends Controller
             });
         }
 
-        // Apply category filter
         if ($request->category) {
             $query->where('category_id', $request->category);
         }
 
-        // Apply date range filter
         if ($request->date_from) {
             $query->whereDate('planting_date', '>=', $request->date_from);
         }
@@ -55,15 +57,13 @@ class CropPlantingController extends Controller
             $query->whereDate('planting_date', '<=', $request->date_to);
         }
 
-        // Get counts for status badges
+        // Get counts for status badges (using the filtered query)
         $standingCount = (clone $query)->where('status', 'standing')->count();
         $harvestCount = (clone $query)->where('status', 'harvest')->count();
-        $partiallyHarvestedCount = CropPlanting::where('status', 'partially harvested')->count();
+        $partiallyHarvestedCount = (clone $query)->where('status', 'partially harvested')->count();
         $harvestedCount = (clone $query)->where('status', 'harvested')->count();
 
-        // Get categories for filter dropdown
         $categories = Category::all();
-
         $plantings = $query->latest()->paginate(10);
 
         return view('crop_plantings.index', compact(
