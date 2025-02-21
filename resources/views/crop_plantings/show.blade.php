@@ -155,28 +155,69 @@
 
                 <!-- Progress Section -->
                 @if($cropPlanting->status === 'harvest' || $cropPlanting->status === 'partially harvested')
-                <div class="card bg-base-200 md:col-span-2">
+                <div class="card bg-base-100 shadow-xl md:col-span-2">
                     <div class="card-body">
-                        <div class="alert alert-info">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium">Harvest Progress</p>
-                                    <p>Area Planted: {{ number_format($cropPlanting->area_planted, 2) }} ha</p>
-                                    <p>Area Harvested: {{ number_format($cropPlanting->harvested_area, 2) }} ha</p>
-                                    <p>Remaining Area: {{ number_format($cropPlanting->remaining_area, 2) }} ha</p>
+                        <div class="flex items-center gap-2 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            <h3 class="text-xl font-semibold">Harvest Progress</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Progress Stats -->
+                            <div class="space-y-4">
+                                <div class="stats stats-vertical w-full bg-base-200">
+                                    <div class="stat">
+                                        <div class="stat-title">Area Planted</div>
+                                        <div class="stat-value text-primary">{{ number_format($cropPlanting->area_planted, 2) }}</div>
+                                        <div class="stat-desc">hectares</div>
+                                    </div>
+
+                                    <div class="stat">
+                                        <div class="stat-title">Area Harvested</div>
+                                        <div class="stat-value text-success">{{ number_format($cropPlanting->harvested_area, 2) }}</div>
+                                        <div class="stat-desc">hectares</div>
+                                    </div>
+
+                                    <div class="stat">
+                                        <div class="stat-title">Remaining Area</div>
+                                        <div class="stat-value text-warning">{{ number_format($cropPlanting->remaining_area, 2) }}</div>
+                                        <div class="stat-desc">hectares</div>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <!-- Progress Bar and Action -->
+                            <div class="flex flex-col justify-between">
+                                <div class="space-y-4">
+                                    <div class="text-center">
+                                        <div class="text-4xl font-bold text-primary mb-1">
+                                            {{ number_format($cropPlanting->harvest_progress, 1) }}%
+                                        </div>
+                                        <div class="text-base-content/70">Overall Progress</div>
+                                    </div>
+
+                                    <div class="w-full bg-base-200 rounded-full h-4 relative overflow-hidden">
+                                        <div class="absolute top-0 left-0 h-full bg-primary transition-all duration-500 rounded-full"
+                                            style="width: {{ $cropPlanting->harvest_progress }}%"></div>
+                                    </div>
+                                </div>
+
                                 @can('manage crop planting')
                                     @if($cropPlanting->canBeHarvested())
-                                        <a href="{{ route('harvest_reports.create', $cropPlanting->id) }}"
-                                        class="btn btn-primary">
-                                            Record Harvest
-                                        </a>
+                                        <div class="mt-4 text-center">
+                                            <a href="{{ route('harvest_reports.create', $cropPlanting->id) }}"
+                                            class="btn btn-primary btn-wide gap-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                </svg>
+                                                Record New Harvest
+                                            </a>
+                                        </div>
                                     @endif
                                 @endcan
                             </div>
-                            <progress class="progress w-full mt-2"
-                                    value="{{ $cropPlanting->harvest_progress }}"
-                                    max="100"></progress>
                         </div>
                     </div>
                 </div>
@@ -279,7 +320,7 @@
             </div>
 
             <!-- Details Column -->
-            <div class="space-y-6">
+            <div class="space-y-6 lg:sticky lg:top-4 lg:self-start">
                 <!-- Combined Information Card -->
                 <div class="card bg-base-100 shadow-xl">
                     <div class="card-body space-y-6">

@@ -169,8 +169,8 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td>{{ $planting->planting_date }}</td>
-                                    <td>{{ $planting->expected_harvest_date }}</td>
+                                    <td>{{ $planting->planting_date->format('M d, Y') }}</td>
+                                    <td>{{ $planting->expected_harvest_date->format('M d, Y') }}</td>
                                     <td>
                                         @switch($planting->status)
                                         @case('standing')
