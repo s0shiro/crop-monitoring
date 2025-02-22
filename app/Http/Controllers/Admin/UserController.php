@@ -11,10 +11,53 @@ use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->get();
-        return view('admin.users.index', compact('users'));
+        $query = User::with('roles');
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Apply role filter
+        if ($request->filled('role')) {
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('name', $request->role);
+            });
+        }
+
+        // Apply sorting
+        switch ($request->sort) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'name':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name-desc':
+                $query->orderBy('name', 'desc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        // Get paginated results
+        $users = $query->paginate(10)->withQueryString();
+
+        // Get counts for stats
+        $stats = [
+            'total' => User::count(),
+            'admin' => User::role('admin')->count(),
+            'coordinator' => User::role('coordinator')->count(),
+            'technician' => User::role('technician')->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'stats'));
     }
 
     public function create()

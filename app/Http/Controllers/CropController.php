@@ -13,10 +13,26 @@ class CropController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $crops = Crop::with(['category', 'varieties'])->get();
-        return view('crops.index', compact('crops'));
+        $query = Crop::with(['category', 'varieties']);
+
+        // Apply search filter if provided and not empty
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where('name', 'like', $searchTerm);
+        }
+
+        // Apply category filter if provided and not empty
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $crops = $query->paginate(10)->withQueryString();
+        $categories = Category::all();
+        $varieties = Variety::all();
+
+        return view('crops.index', compact('crops', 'categories', 'varieties'));
     }
 
     /**
