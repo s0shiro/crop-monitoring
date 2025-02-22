@@ -1,67 +1,97 @@
 <div class="drawer-side">
     <label for="my-drawer" class="drawer-overlay"></label>
-    <aside class="bg-base-200 w-64 min-h-screen border-r border-base-300">
+    <aside class="bg-base-200 w-64 min-h-screen flex flex-col">
         <!-- Profile Section -->
-        <div class="p-3 bg-base-100 shadow-sm">
+        <div class="p-4 bg-base-100 border-b border-base-300">
             <div class="flex items-center space-x-3">
                 <div class="avatar placeholder">
-                    <div class="bg-neutral text-neutral-content rounded-full w-10">
-                        <span class="text-base">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                    <div class="bg-primary text-primary-content rounded-full w-10">
+                        <span class="text-lg font-medium">{{ substr(auth()->user()->name, 0, 1) }}</span>
                     </div>
                 </div>
                 <div>
-                    <h2 class="text-base font-semibold">Dashboard</h2>
-                    <p class="text-xs text-base-content/70">{{ auth()->user()->roles->first()->name }}</p>
+                    <h2 class="font-semibold">{{ auth()->user()->name }}</h2>
+                    <span class="text-xs text-base-content/70 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-success"></span>
+                        {{ ucfirst(auth()->user()->roles->first()->name) }}
+                    </span>
                 </div>
             </div>
         </div>
 
         <!-- Navigation Menu -->
-        <ul class="menu menu-md bg-base-200 w-full p-2 gap-1">
-            <x-sidebar-item route="{{ auth()->user()->roles->first()->name }}.dashboard" icon="home" title="Home" />
+        <nav class="flex-1 overflow-y-auto">
+            <ul class="menu menu-md w-full">
+                <!-- Common Menu Items -->
+                <li class="menu-title mt-4">
+                    <span>General</span>
+                </li>
+                <x-sidebar-item route="{{ auth()->user()->roles->first()->name }}.dashboard" icon="home" title="Dashboard" />
 
-            @role('admin')
-            <div class="divider divider-neutral my-1 text-xs">Administration</div>
+                @role('admin')
+                <li class="menu-title mt-4">
+                    <span>Administration</span>
+                </li>
+                <x-sidebar-item route="users.index" icon="users" title="Users" />
+                <x-sidebar-item route="farmers.index" icon="farmer" title="Farmers" />
+                <x-sidebar-item route="associations.index" icon="association" title="Associations" />
 
-            <x-sidebar-item route="users.index" icon="users" title="Users Management" />
-            <x-sidebar-item route="crops.index" icon="crop" title="Crops Management" />
-            <x-sidebar-item route="farmers.index" icon="farmer" title="Farmers Management" />
-            <x-sidebar-item route="associations.index" icon="association" title="Associations" />
-            <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
-            <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="Crop Inspections" />
-            @endrole
+                <li class="menu-title mt-4">
+                    <span>Crop Management</span>
+                </li>
+                <x-sidebar-item route="crops.index" icon="crop" title="Crops" />
+                <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Plantings" />
+                <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="Inspections" />
+                @endrole
 
-            @role('technician')
-            <div class="divider divider-neutral my-1 text-xs">Crop Management</div>
+                @role('technician')
+                <li class="menu-title mt-4">
+                    <span>Management</span>
+                </li>
+                <x-sidebar-item route="farmers.index" icon="farmer" title="My Farmers" />
+                <x-sidebar-item route="associations.index" icon="association" title="Associations" />
 
-            <x-sidebar-item route="farmers.index" icon="farmer" title="My Farmers" />
-            <x-sidebar-item route="crops.index" icon="crop" title="Crops Management" />
-            <x-sidebar-item route="associations.index" icon="association" title="Associations" />
-            <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
-            <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="My Inspections" />
-            @endrole
+                <li class="menu-title mt-4">
+                    <span>Field Work</span>
+                </li>
+                <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Plantings" />
+                <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="Inspections" />
+                @endrole
 
-            @role('coordinator')
-            <div class="divider divider-neutral my-1 text-xs">Coordination</div>
-            <x-sidebar-item route="crops.index" icon="crop" title="Crops" />
-            <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
-            <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="Inspections" />
-            @endrole
-        </ul>
+                @role('coordinator')
+                <li class="menu-title mt-4">
+                    <span>Coordination</span>
+                </li>
+                <x-sidebar-item route="crops.index" icon="crop" title="Crops Overview" />
+                <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Planting Records" />
+                <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="Inspection Reports" />
+                @endrole
+            </ul>
+        </nav>
 
         <!-- Footer -->
-        <div class="absolute bottom-0 w-full p-3 bg-base-200 border-t border-base-300">
+        <div class="p-4 bg-base-200 border-t border-base-300">
             <div class="flex items-center justify-between">
-                <div class="text-xs text-base-content/70">
-                    <p>Crop Monitoring System</p>
-                    <p class="text-[10px]">v1.0.0</p>
+                <div>
+                    <p class="text-xs font-medium">Crop Monitoring</p>
+                    <p class="text-[10px] text-base-content/70">Version 1.0.0</p>
                 </div>
-                <button class="btn btn-circle btn-ghost btn-xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </button>
+                <div class="dropdown dropdown-top dropdown-end">
+                    <button tabindex="0" class="btn btn-ghost btn-circle btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </button>
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                        <li><a href="{{ route('profile.edit') }}">Settings</a></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="text-error">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </aside>
