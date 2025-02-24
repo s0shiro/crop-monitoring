@@ -14,9 +14,41 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
+
+    <style>
+        /* Customize NProgress */
+        #nprogress .bar {
+            background: hsl(var(--p)) !important;
+        }
+
+        #nprogress .peg {
+            box-shadow: 0 0 10px hsl(var(--p)), 0 0 5px hsl(var(--p)) !important;
+        }
+
+        #nprogress .spinner-icon {
+            border-top-color: hsl(var(--p)) !important;
+            border-left-color: hsl(var(--p)) !important;
+        }
+
+        /* Page Transition */
+        .page-transition {
+            opacity: 1;
+            transition: opacity 300ms ease-in-out;
+        }
+
+        .page-transition.loading {
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body class="font-sans antialiased overflow-hidden">
-    <div class="drawer lg:drawer-open h-screen">
+    <div
+        x-data="{ loading: false }"
+        @navigate.window="loading = true"
+        @load.window="loading = false"
+        class="drawer lg:drawer-open h-screen"
+    >
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
 
         <div class="drawer-content flex flex-col h-screen">
@@ -115,8 +147,12 @@
                 </div>
             </div>
 
-            <!-- Main Content with top padding -->
-            <main class="flex-1 pt-2 overflow-y-auto scroll-smooth" style="scroll-behavior: smooth;">
+            <!-- Main Content with transitions -->
+            <main
+                class="flex-1 pt-2 overflow-y-auto scroll-smooth page-transition"
+                :class="{ 'loading': loading }"
+                style="scroll-behavior: smooth;"
+            >
                 {{ $slot }}
             </main>
         </div>
@@ -127,8 +163,32 @@
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 
     <script>
+        // Configure NProgress
+        NProgress.configure({ showSpinner: false });
+
+        // Start progress bar on navigation
+        document.addEventListener('alpine:init', () => {
+            window.addEventListener('navigate', () => {
+                NProgress.start();
+            });
+
+            window.addEventListener('load', () => {
+                NProgress.done();
+            });
+        });
+
+        // Handle navigation events
+        document.addEventListener('turbo:before-visit', () => {
+            NProgress.start();
+        });
+
+        document.addEventListener('turbo:load', () => {
+            NProgress.done();
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const themeButtons = document.querySelectorAll('[data-theme-toggle]');
 
