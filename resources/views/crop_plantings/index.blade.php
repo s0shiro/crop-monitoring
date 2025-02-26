@@ -117,26 +117,27 @@
             <a href="{{ route('crop_plantings.index', ['status' => 'all']) }}"
                class="tab tab-lg {{ request('status', 'all') === 'all' ? 'tab-active' : '' }}">
                 All Records
+                <div class="badge badge-sm badge-neutral ml-2">{{ $plantings->total() }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'standing']) }}"
                class="tab tab-lg {{ request('status') === 'standing' ? 'tab-active' : '' }}">
                 Standing
-                <div class="badge badge-sm badge-success ml-2">{{ $standingCount }}</div>
+                <div class="badge badge-sm {{ request('status') === 'standing' ? 'badge-primary' : 'badge-success' }} ml-2">{{ $standingCount }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'harvest']) }}"
                class="tab tab-lg {{ request('status') === 'harvest' ? 'tab-active' : '' }}">
                 Ready to Harvest
-                <div class="badge badge-sm badge-warning ml-2">{{ $harvestCount }}</div>
+                <div class="badge badge-sm {{ request('status') === 'harvest' ? 'badge-primary' : 'badge-warning' }} ml-2">{{ $harvestCount }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'partially harvested']) }}"
                class="tab tab-lg {{ request('status') === 'partially harvested' ? 'tab-active' : '' }}">
                 Partially Harvested
-                <div class="badge badge-sm badge-warning ml-2">{{ $partiallyHarvestedCount }}</div>
+                <div class="badge badge-sm {{ request('status') === 'partially harvested' ? 'badge-primary' : 'badge-warning' }} ml-2">{{ $partiallyHarvestedCount }}</div>
             </a>
             <a href="{{ route('crop_plantings.index', ['status' => 'harvested']) }}"
                class="tab tab-lg {{ request('status') === 'harvested' ? 'tab-active' : '' }}">
                 Harvested
-                <div class="badge badge-sm badge-info ml-2">{{ $harvestedCount }}</div>
+                <div class="badge badge-sm {{ request('status') === 'harvested' ? 'badge-primary' : 'badge-info' }} ml-2">{{ $harvestedCount }}</div>
             </a>
         </div>
 
@@ -267,18 +268,27 @@
     <script>
         function toggleStats() {
             const statsSection = document.getElementById('statsSection');
-            statsSection.classList.toggle('hidden');
-            // Store the preference in localStorage
-            localStorage.setItem('statsVisible', !statsSection.classList.contains('hidden'));
+            const isCurrentlyVisible = !statsSection.classList.contains('hidden');
+            if (isCurrentlyVisible) {
+                statsSection.classList.add('hidden');
+                localStorage.setItem('statsVisible', 'false');
+            } else {
+                statsSection.classList.remove('hidden');
+                localStorage.setItem('statsVisible', 'true');
+            }
         }
 
         // On page load, check localStorage for preference
         document.addEventListener('DOMContentLoaded', function() {
             const statsSection = document.getElementById('statsSection');
             const statsVisible = localStorage.getItem('statsVisible');
+
             if (statsVisible === 'false') {
                 statsSection.classList.add('hidden');
+            } else if (statsVisible === 'true') {
+                statsSection.classList.remove('hidden');
             }
+            // If statsVisible is null (first visit), leave default visibility
         });
     </script>
     @endpush

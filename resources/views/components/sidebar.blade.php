@@ -56,6 +56,11 @@
                 </li>
                 <x-sidebar-item route="crop_plantings.index" icon="crop_planting" title="Plantings" />
                 <x-sidebar-item route="crop_inspections.index" icon="clipboard-check" title="Inspections" />
+
+                <li class="menu-title mt-4">
+                    <span>Crop Management</span>
+                </li>
+                <x-sidebar-item route="crops.index" icon="crop" title="Crops" />
                 @endrole
 
                 @role('coordinator')
