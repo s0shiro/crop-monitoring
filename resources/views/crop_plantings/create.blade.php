@@ -142,6 +142,19 @@
                                 </label>
                                 <input type="text" id="longitude" name="longitude" class="input input-bordered" readonly required>
                             </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Municipality</span>
+                                </label>
+                                <input type="text" id="municipality" name="municipality" class="input input-bordered" readonly required>
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">Barangay</span>
+                                </label>
+                                <input type="text" id="barangay" name="barangay" class="input input-bordered" readonly required>
+                            </div>
                         </div>
                         <div class="flex justify-between">
                             <button type="button" onclick="prevStep(1)" class="btn btn-ghost">Previous</button>
@@ -320,16 +333,39 @@
 
         var marker;
 
-        // Handle map clicks
-        map.on('click', function(e) {
-            // Only allow placing markers within Marinduque bounds
+        async function getLocationDetails(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+                const data = await response.json();
+                
+                // Extract municipality and barangay from address
+                const address = data.address;
+                const municipality = address.town || address.city || address.municipality;
+                const barangay = address.suburb || address.village || address.neighbourhood;
+                
+                // Update form fields
+                document.getElementById('municipality').value = municipality || '';
+                document.getElementById('barangay').value = barangay || '';
+                
+                return {municipality, barangay};
+            } catch (error) {
+                console.error('Error fetching location details:', error);
+                return null;
+            }
+        }
+
+        // Update the existing map click handler
+        map.on('click', async function(e) {
             if (marinduqueBounds.contains(e.latlng)) {
                 const lat = e.latlng.lat;
                 const lng = e.latlng.lng;
 
-                // Update hidden inputs
+                // Update coordinates
                 document.getElementById('latitude').value = lat;
                 document.getElementById('longitude').value = lng;
+
+                // Get and update location details
+                await getLocationDetails(lat, lng);
 
                 // Update or create marker
                 if (marker) {
@@ -365,11 +401,13 @@
         }
 
         function validateStep2() {
-            const fields = [
-                document.getElementById('latitude'),
-                document.getElementById('longitude')
-            ];
-            return checkFields(fields);
+        const fields = [
+            document.getElementById('latitude'),
+            document.getElementById('longitude'),
+            document.getElementById('municipality'),
+            document.getElementById('barangay')
+        ];
+        return checkFields(fields);
         }
 
         function validateStep3() {

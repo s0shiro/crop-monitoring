@@ -215,6 +215,23 @@
                                         <input type="number" name="longitude" id="longitude" value="{{ $cropPlanting->longitude }}"
                                             step="any" class="input input-bordered" required readonly>
                                     </div>
+
+                                    <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text font-medium">Municipality</span>
+                                    </label>
+                                    <input type="text" id="municipality" name="municipality" 
+                                        value="{{ old('municipality', $cropPlanting->municipality) }}" 
+                                        class="input input-bordered" readonly required>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text font-medium">Barangay</span>
+                                        </label>
+                                        <input type="text" id="barangay" name="barangay" 
+                                            value="{{ old('barangay', $cropPlanting->barangay) }}" 
+                                            class="input input-bordered" readonly required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -342,14 +359,41 @@
         // Add initial marker if coordinates exist
         var marker = {{ $cropPlanting->latitude && $cropPlanting->longitude ? 'L.marker([' . $cropPlanting->latitude . ', ' . $cropPlanting->longitude . ']).addTo(map)' : 'null' }};
 
-        map.on('click', function(e) {
+        async function getLocationDetails(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+                const data = await response.json();
+                
+                // Extract municipality and barangay from address
+                const address = data.address;
+                const municipality = address.town || address.city || address.municipality;
+                const barangay = address.suburb || address.village || address.neighbourhood;
+                
+                // Update form fields
+                document.getElementById('municipality').value = municipality || '';
+                document.getElementById('barangay').value = barangay || '';
+                
+                return {municipality, barangay};
+            } catch (error) {
+                console.error('Error fetching location details:', error);
+                return null;
+            }
+        }
+
+        // Update the map click handler
+        map.on('click', async function(e) {
             if (marinduqueBounds.contains(e.latlng)) {
                 const lat = e.latlng.lat;
                 const lng = e.latlng.lng;
 
+                // Update coordinates
                 document.getElementById('latitude').value = lat;
                 document.getElementById('longitude').value = lng;
 
+                // Get and update location details
+                await getLocationDetails(lat, lng);
+
+                // Update or create marker
                 if (marker) {
                     marker.setLatLng(e.latlng);
                 } else {
@@ -357,6 +401,7 @@
                 }
             }
         });
+
     </script>
 
     @push('scripts')

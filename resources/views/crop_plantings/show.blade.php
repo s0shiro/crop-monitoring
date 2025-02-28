@@ -153,6 +153,20 @@
                     </div>
                 </div>
 
+                <!-- Add this to your location information section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-medium">Location</span>
+                        </label>
+                        <div class="text-gray-600">
+                            {{ $cropPlanting->barangay }}, {{ $cropPlanting->municipality }}
+                            <br>
+                            Coordinates: {{ $cropPlanting->latitude }}, {{ $cropPlanting->longitude }}
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Progress Section -->
                 @if($cropPlanting->status === 'harvest' || $cropPlanting->status === 'partially harvested')
                 <div class="card bg-base-100 shadow-xl md:col-span-2">

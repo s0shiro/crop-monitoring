@@ -24,6 +24,8 @@ class CropPlanting extends Model
         'status',
         'latitude',
         'longitude',
+        'municipality',
+        'barangay',
         'harvested_area',
         'remaining_area'
     ];

@@ -106,6 +106,8 @@ class CropPlantingController extends Controller
             'status' => 'required|in:standing,harvest,harvested',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            'municipality' => 'required|string|max:100',
+            'barangay' => 'required|string|max:100',
             // Add new validation rules
             'classification' => 'required_if:category_name,High Value Crops',
             'water_supply' => 'required_if:category_name,Rice',
@@ -134,6 +136,8 @@ class CropPlantingController extends Controller
                     'status' => $request->status,
                     'latitude' => $request->latitude,
                     'longitude' => $request->longitude,
+                    'municipality' => $request->municipality,
+                    'barangay' => $request->barangay,
                 ]);
 
                 // Handle category-specific details
@@ -202,6 +206,8 @@ class CropPlantingController extends Controller
             'classification' => 'required_if:category_name,High Value Crops',
             'water_supply' => 'required_if:category_name,Rice',
             'land_type' => 'nullable|required_if:category_name,Rice',
+            'municipality' => 'required|string|max:100',
+            'barangay' => 'required|string|max:100',
         ]);
 
         try {
@@ -223,6 +229,8 @@ class CropPlantingController extends Controller
                     'status' => $request->status,
                     'latitude' => $request->latitude,
                     'longitude' => $request->longitude,
+                    'municipality' => $request->municipality,
+                    'barangay' => $request->barangay,
                 ]);
 
                 // Handle category-specific details
