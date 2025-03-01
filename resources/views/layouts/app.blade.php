@@ -14,23 +14,8 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
 
     <style>
-        /* Customize NProgress */
-        #nprogress .bar {
-            background: hsl(var(--p)) !important;
-        }
-
-        #nprogress .peg {
-            box-shadow: 0 0 10px hsl(var(--p)), 0 0 5px hsl(var(--p)) !important;
-        }
-
-        #nprogress .spinner-icon {
-            border-top-color: hsl(var(--p)) !important;
-            border-left-color: hsl(var(--p)) !important;
-        }
-
         /* Page Transition */
         .page-transition {
             opacity: 1;
@@ -110,9 +95,9 @@
                             </svg>
                         </label>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52">
-                            <li><button data-theme-toggle="light">🌞 Light</button></li>
-                            <li><button data-theme-toggle="dark">🌚 Dark</button></li>
-                            <li><button data-theme-toggle="system">💻 System</button></li>
+                            <li><button onclick="setTheme('light')" class="gap-2">🌞 Light</button></li>
+                            <li><button onclick="setTheme('dark')" class="gap-2">🌚 Dark</button></li>
+                            <li><button onclick="setTheme('system')" class="gap-2">💻 System</button></li>
                         </ul>
                     </div>
 
@@ -163,46 +148,36 @@
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 
     <script>
-        // Configure NProgress
-        NProgress.configure({ showSpinner: false });
+        // Theme management
+        function setTheme(theme) {
+            if (theme === 'system') {
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', systemTheme);
+                localStorage.setItem('theme', 'system');
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            }
+        }
 
-        // Start progress bar on navigation
-        document.addEventListener('alpine:init', () => {
-            window.addEventListener('navigate', () => {
-                NProgress.start();
-            });
-
-            window.addEventListener('load', () => {
-                NProgress.done();
-            });
-        });
-
-        // Handle navigation events
-        document.addEventListener('turbo:before-visit', () => {
-            NProgress.start();
-        });
-
-        document.addEventListener('turbo:load', () => {
-            NProgress.done();
-        });
-
+        // Initialize theme
         document.addEventListener('DOMContentLoaded', function() {
-            const themeButtons = document.querySelectorAll('[data-theme-toggle]');
+            const savedTheme = localStorage.getItem('theme') || 'system';
+            if (savedTheme === 'system') {
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', systemTheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
 
-            themeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const theme = button.getAttribute('data-theme-toggle');
-                    document.documentElement.setAttribute('data-theme', theme);
-                    localStorage.setItem('theme', theme);
-                });
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (localStorage.getItem('theme') === 'system') {
+                    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                }
             });
-
-            // Check for saved theme
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
         });
     </script>
 </body>
