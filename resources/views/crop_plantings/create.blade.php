@@ -83,7 +83,7 @@
                                 <label class="label">
                                     <span class="label-text font-medium">Classification</span>
                                 </label>
-                                <select name="classification" class="select select-bordered w-full">
+                                <select name="hvc_classification" class="select select-bordered w-full">
                                     <option value="">Select Classification</option>
                                     <option value="lowland vegetable">Lowland Vegetable</option>
                                     <option value="upland vegetable">Upland Vegetable</option>
@@ -96,6 +96,20 @@
 
                             <!-- Rice Fields -->
                             <div id="rice-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                                <div class="form-control w-full">
+                                    <label class="label">
+                                        <span class="label-text font-medium">Classification</span>
+                                    </label>
+                                    <select name="rice_classification" class="select select-bordered w-full">
+                                        <option value="">Select Classification</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="Registered">Registered</option>
+                                        <option value="Certified">Certified</option>
+                                        <option value="Good Quality">Good Quality</option>
+                                        <option value="Farmer Saved Seeds">Farmer Saved Seeds</option>
+                                    </select>
+                                </div>
+                                
                                 <div class="form-control w-full">
                                     <label class="label">
                                         <span class="label-text font-medium">Water Supply</span>
@@ -293,12 +307,13 @@
 
             // Add category-specific required fields
             if (categoryName === 'High Value Crops') {
-                additionalFields.push(document.querySelector('select[name="classification"]'));
+                additionalFields.push(document.querySelector('select[name="hvc_classification"]'));
             } else if (categoryName === 'Rice') {
                 additionalFields.push(
-                    document.querySelector('select[name="water_supply"]'),
-                    document.querySelector('select[name="land_type"]')
+                    document.querySelector('select[name="rice_classification"]'),
+                    document.querySelector('select[name="water_supply"]')
                 );
+                // Land type is not required
             }
 
             return checkFields([...baseFields, ...additionalFields]);

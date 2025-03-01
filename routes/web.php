@@ -156,6 +156,15 @@ Route::group(['middleware' => ['auth']], function () {
                     ->name('harvest_reports.store');
             });
         });
+
+        // Reports routes
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/reports/rice-standing', [App\Http\Controllers\ReportController::class, 'riceStandingReport'])
+                ->name('reports.rice-standing');
+                
+            Route::get('/reports/rice-harvesting', [App\Http\Controllers\ReportController::class, 'riceHarvestingReport'])
+                ->name('reports.rice-harvesting');
+        });
     });
 });
 

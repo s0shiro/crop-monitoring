@@ -108,7 +108,7 @@
                                     <label class="label">
                                         <span class="label-text font-medium">Classification</span>
                                     </label>
-                                    <select name="classification" class="select select-bordered w-full">
+                                    <select name="hvc_classification" class="select select-bordered w-full">
                                         <option value="">Select Classification</option>
                                         @php
                                             $classifications = ['lowland vegetable', 'upland vegetable', 'legumes', 'spice', 'rootcrop', 'fruit'];
@@ -124,6 +124,20 @@
 
                                 <!-- Rice Fields -->
                                 <div id="rice-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 {{ $cropPlanting->category->name !== 'Rice' ? 'hidden' : '' }}">
+                                    <div class="form-control w-full">
+                                        <label class="label">
+                                            <span class="label-text font-medium">Classification</span>
+                                        </label>
+                                        <select name="rice_classification" class="select select-bordered w-full">
+                                            <option value="">Select Classification</option>
+                                            <option value="Hybrid" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->classification === 'Hybrid' ? 'selected' : '' }}>Hybrid</option>
+                                            <option value="Registered" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->classification === 'Registered' ? 'selected' : '' }}>Registered</option>
+                                            <option value="Certified" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->classification === 'Certified' ? 'selected' : '' }}>Certified</option>
+                                            <option value="Good Quality" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->classification === 'Good Quality' ? 'selected' : '' }}>Good Quality</option>
+                                            <option value="Farmer Saved Seeds" {{ $cropPlanting->riceDetail && $cropPlanting->riceDetail->classification === 'Farmer Saved Seeds' ? 'selected' : '' }}>Farmer Saved Seeds</option>
+                                        </select>
+                                    </div>
+                                    
                                     <div class="form-control w-full">
                                         <label class="label">
                                             <span class="label-text font-medium">Water Supply</span>

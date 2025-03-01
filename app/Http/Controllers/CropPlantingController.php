@@ -93,7 +93,10 @@ class CropPlantingController extends Controller
     {
         $this->validateFarmerAccess($request->farmer_id);
 
-        $request->validate([
+        $categoryName = Category::findOrFail($request->category_id)->name;
+
+        // Create custom validation rules based on category
+        $validationRules = [
             'farmer_id' => 'required|exists:farmers,id',
             'category_id' => 'required|exists:categories,id',
             'crop_id' => 'required|exists:crops,id',
@@ -108,14 +111,21 @@ class CropPlantingController extends Controller
             'longitude' => 'required|numeric|between:-180,180',
             'municipality' => 'required|string|max:100',
             'barangay' => 'required|string|max:100',
-            // Add new validation rules
-            'classification' => 'required_if:category_name,High Value Crops',
-            'water_supply' => 'required_if:category_name,Rice',
-            'land_type' => 'nullable|required_if:category_name,Rice',
-        ]);
+        ];
+
+        // Add category-specific validation
+        if ($categoryName === 'High Value Crops') {
+            $validationRules['hvc_classification'] = 'required|string';
+        } elseif ($categoryName === 'Rice') {
+            $validationRules['rice_classification'] = 'required|string';
+            $validationRules['water_supply'] = 'required|string';
+            $validationRules['land_type'] = 'nullable|string';
+        }
+
+        $request->validate($validationRules);
 
         try {
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request, $categoryName) {
                 $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
                 $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
 
@@ -127,8 +137,8 @@ class CropPlantingController extends Controller
                     'planting_date' => $request->planting_date,
                     'expected_harvest_date' => $expectedHarvestDate,
                     'area_planted' => $request->area_planted,
-                    'harvested_area' => 0, // Add this
-                    'remaining_area' => $request->area_planted, // Add this
+                    'harvested_area' => 0,
+                    'remaining_area' => $request->area_planted,
                     'quantity' => $request->quantity,
                     'expenses' => $request->expenses,
                     'technician_id' => Auth::id(),
@@ -141,15 +151,15 @@ class CropPlantingController extends Controller
                 ]);
 
                 // Handle category-specific details
-                $category = Category::find($request->category_id);
-                if ($category->name === 'High Value Crops') {
+                if ($categoryName === 'High Value Crops') {
                     HvcDetail::create([
                         'crop_planting_id' => $cropPlanting->id,
-                        'classification' => $request->classification
+                        'classification' => $request->hvc_classification
                     ]);
-                } elseif ($category->name === 'Rice') {
+                } elseif ($categoryName === 'Rice') {
                     RiceDetail::create([
                         'crop_planting_id' => $cropPlanting->id,
+                        'classification' => $request->rice_classification,
                         'water_supply' => $request->water_supply,
                         'land_type' => $request->land_type
                     ]);
@@ -190,7 +200,10 @@ class CropPlantingController extends Controller
         $this->authorize('update', $cropPlanting);
         $this->validateFarmerAccess($request->farmer_id);
 
-        $request->validate([
+        $categoryName = Category::findOrFail($request->category_id)->name;
+
+        // Create custom validation rules based on category
+        $validationRules = [
             'farmer_id' => 'required|exists:farmers,id',
             'category_id' => 'required|exists:categories,id',
             'crop_id' => 'required|exists:crops,id',
@@ -203,15 +216,23 @@ class CropPlantingController extends Controller
             'status' => 'required|in:standing,harvest,harvested',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
-            'classification' => 'required_if:category_name,High Value Crops',
-            'water_supply' => 'required_if:category_name,Rice',
-            'land_type' => 'nullable|required_if:category_name,Rice',
             'municipality' => 'required|string|max:100',
             'barangay' => 'required|string|max:100',
-        ]);
+        ];
+
+        // Add category-specific validation
+        if ($categoryName === 'High Value Crops') {
+            $validationRules['hvc_classification'] = 'required|string';
+        } elseif ($categoryName === 'Rice') {
+            $validationRules['rice_classification'] = 'required|string';
+            $validationRules['water_supply'] = 'required|string';
+            $validationRules['land_type'] = 'nullable|string';
+        }
+
+        $request->validate($validationRules);
 
         try {
-            DB::transaction(function () use ($request, $cropPlanting) {
+            DB::transaction(function () use ($request, $cropPlanting, $categoryName) {
                 $maturityDays = Variety::where('id', $request->variety_id)->value('maturity_days');
                 $expectedHarvestDate = $maturityDays ? Carbon::parse($request->planting_date)->addDays($maturityDays) : null;
 
@@ -234,18 +255,18 @@ class CropPlantingController extends Controller
                 ]);
 
                 // Handle category-specific details
-                $category = Category::find($request->category_id);
-                if ($category->name === 'High Value Crops') {
+                if ($categoryName === 'High Value Crops') {
                     HvcDetail::updateOrCreate(
                         ['crop_planting_id' => $cropPlanting->id],
-                        ['classification' => $request->classification]
+                        ['classification' => $request->hvc_classification]
                     );
                     // Delete any existing rice details if category changed
                     RiceDetail::where('crop_planting_id', $cropPlanting->id)->delete();
-                } elseif ($category->name === 'Rice') {
+                } elseif ($categoryName === 'Rice') {
                     RiceDetail::updateOrCreate(
                         ['crop_planting_id' => $cropPlanting->id],
                         [
+                            'classification' => $request->rice_classification,
                             'water_supply' => $request->water_supply,
                             'land_type' => $request->land_type
                         ]
